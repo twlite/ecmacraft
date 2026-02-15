@@ -1,0 +1,22 @@
+{
+    "name": "@ecmacraft/dev-plugin",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Dev minecraft plugin with TypeScript",
+    "type": "module",
+    "scripts": {
+        "build": "esbuild ./src/main.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/main.js"
+    },
+    "license": "MIT",
+    "author": "Twilight <hello@twlite.dev>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/twlite/ecmacraft"
+    },
+    "devDependencies": {
+        "@ecmacraft/tsconfig": "workspace:*",
+        "@ecmacraft/types": "workspace:*",
+        "esbuild": "^0.27.3",
+        "typescript": "^5.9.3"
+    }
+}

@@ -14,7 +14,7 @@
   <properties>
     <java.version>21</java.version>
     <spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
-    <graalvm.version>24.0.0</graalvm.version>
+    <graalvm.version>24.0.1</graalvm.version>
   </properties>
 
   <repositories>
@@ -30,34 +30,34 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.21.1-R0.1-SNAPSHOT</version>
+      <version>1.21.4-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <!-- GraalVM Polyglot API -->
     <dependency>
         <groupId>org.graalvm.sdk</groupId>
         <artifactId>graal-sdk</artifactId>
-        <version>24.0.1</version>
+      <version>${graalvm.version}</version>
     </dependency>
 
-    <!-- JavaScript engine -->
+    <!-- JavaScript ScriptEngine bridge (optional but useful for compatibility) -->
     <dependency>
         <groupId>org.graalvm.js</groupId>
         <artifactId>js-scriptengine</artifactId>
-        <version>24.0.1</version>
+      <version>${graalvm.version}</version>
     </dependency>
 
-    <!-- Optional: script engine bridge -->
+    <!-- JavaScript language implementation for Context.newBuilder("js") -->
     <dependency>
         <groupId>org.graalvm.js</groupId>
-        <artifactId>js-scriptengine</artifactId>
-        <version>24.0.1</version>
+      <artifactId>js-language</artifactId>
+      <version>${graalvm.version}</version>
     </dependency>
     <!-- jar -->
     <dependency>
         <groupId>org.graalvm.truffle</groupId>
         <artifactId>truffle-api</artifactId>
-        <version>24.0.1</version>
+      <version>${graalvm.version}</version>
     </dependency>
 </dependencies>
 
@@ -89,6 +89,9 @@
               <relocations>
                 <!-- optional relocation rules -->
               </relocations>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
             </configuration>
           </execution>
         </executions>

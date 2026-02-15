@@ -27,6 +27,9 @@
             </goals>
             <configuration>
               <relocations />
+              <transformers>
+                <transformer />
+              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -43,13 +46,13 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.21.1-R0.1-SNAPSHOT</version>
+      <version>1.21.4-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
   <properties>
     <spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
     <java.version>21</java.version>
-    <graalvm.version>24.0.0</graalvm.version>
+    <graalvm.version>24.0.1</graalvm.version>
   </properties>
 </project>
