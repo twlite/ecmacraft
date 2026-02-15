@@ -17,6 +17,30 @@ Traditional plugin development is Java-first. EcmaCraft provides a TypeScript-fi
 - decorator-based handler registration (`@Event`, `@Command`),
 - Java host/plugin compatibility with standard Spigot deployment.
 
+### Example TypeScript Plugin
+
+This simple plugin strikes lightning at the player's location whenever they start sneaking:
+
+```ts
+import { PluginContext, Event, SpigotEventType } from '@ecmacraft/types';
+
+class LightningStriker {
+  @Event('PlayerToggleSneakEvent')
+  public onPlayerToggleSneak(event: SpigotEventType<'PlayerToggleSneakEvent'>) {
+    if (!event.isSneaking()) return;
+
+    const player = event.getPlayer();
+    const location = player.getLocation();
+
+    location.getWorld().strikeLightning(location);
+  }
+}
+
+export default function main(ctx: PluginContext) {
+  ctx.registerHandlers(new LightningStriker());
+}
+```
+
 ## Architecture
 
 1. The Java plugin (`ecmacraft`) starts on server boot.

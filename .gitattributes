@@ -1,1 +1,4 @@
+*.js linguist-detectable=false
+*.cjs linguist-detectable=false
+*.mjs linguist-detectable=false
 jar_types.ts linguist-detectable=false
