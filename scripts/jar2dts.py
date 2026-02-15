@@ -582,15 +582,15 @@ def class_to_dts(jc: JavaClass, opts, all_classes: set[str]) -> str:
             implements_clause = f" {kw} {', '.join(ifaces)}"
 
     if kind == 'enum':
-        # Emit as const enum
+        # Emit as enum
         enum_values = []
         for f in jc.fields:
             if is_static(f.access) and is_public(f.access):
-                # Enum constants are static fields of the enum type
+                # Enum are static fields of the enum type
                 if f.descriptor == f'L{jc.class_name};':
                     enum_values.append(f"  {sanitize_name(f.name)}")
         if enum_values:
-            lines.append(f"export const enum {name} {{")
+            lines.append(f"export enum {name} {{")
             lines.extend([v + ',' for v in enum_values])
             lines.append("}")
         else:

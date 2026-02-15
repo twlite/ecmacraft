@@ -66,7 +66,7 @@ export interface Art extends OldEnum, Keyed, RegistryAware {
   static values(): Art[];
 }
 
-export const enum Axis {
+export enum Axis {
   X,
   Y,
   Z,
@@ -102,7 +102,7 @@ export interface BanList<T> {
   pardon(arg0: string): void;
 }
 
-export const enum BanList_Type {
+export enum BanList_Type {
   NAME,
   IP,
   PROFILE,
@@ -282,7 +282,7 @@ export declare class Bukkit {
   static spigot(): Server_Spigot;
 }
 
-export const enum ChatColor {
+export enum ChatColor {
   BLACK,
   DARK_BLUE,
   DARK_GREEN,
@@ -383,7 +383,7 @@ export interface Chunk extends PersistentDataHolder {
   getPlayersSeeingChunk(): Array<Player>;
 }
 
-export const enum Chunk_LoadLevel {
+export enum Chunk_LoadLevel {
   INACCESSIBLE,
   BORDER,
   TICKING,
@@ -411,7 +411,7 @@ export interface ChunkSnapshot {
   contains(arg0: Biome): boolean;
 }
 
-export const enum CoalType {
+export enum CoalType {
   COAL,
   CHARCOAL,
 }
@@ -460,7 +460,7 @@ export declare class Color implements ConfigurationSerializable {
   toString(): string;
 }
 
-export const enum CropState {
+export enum CropState {
   SEEDED,
   GERMINATED,
   VERY_SMALL,
@@ -471,14 +471,14 @@ export const enum CropState {
   RIPE,
 }
 
-export const enum Difficulty {
+export enum Difficulty {
   PEACEFUL,
   EASY,
   NORMAL,
   HARD,
 }
 
-export const enum DyeColor {
+export enum DyeColor {
   WHITE,
   ORANGE,
   MAGENTA,
@@ -497,7 +497,7 @@ export const enum DyeColor {
   BLACK,
 }
 
-export const enum Effect {
+export enum Effect {
   CLICK2,
   CLICK1,
   BOW_FIRE,
@@ -568,12 +568,12 @@ export const enum Effect {
   OXIDISED_COPPER_SCRAPE,
 }
 
-export const enum Effect_Type {
+export enum Effect_Type {
   SOUND,
   VISUAL,
 }
 
-export const enum EntityEffect {
+export enum EntityEffect {
   ARROW_PARTICLES,
   RABBIT_JUMP,
   RESET_SPAWNER_MINECART_DELAY,
@@ -640,7 +640,7 @@ export const enum EntityEffect {
   SNIFFER_DIG,
 }
 
-export const enum ExplosionResult {
+export enum ExplosionResult {
   KEEP,
   DESTROY,
   DESTROY_WITH_DECAY,
@@ -687,7 +687,7 @@ export declare class FireworkEffect_Builder {
   build(): FireworkEffect;
 }
 
-export const enum FireworkEffect_Type {
+export enum FireworkEffect_Type {
   BALL,
   BALL_LARGE,
   STAR,
@@ -706,7 +706,7 @@ export interface Fluid extends OldEnum, Keyed, RegistryAware {
   static values(): Fluid[];
 }
 
-export const enum FluidCollisionMode {
+export enum FluidCollisionMode {
   NEVER,
   SOURCE_ONLY,
   ALWAYS,
@@ -799,7 +799,7 @@ export declare abstract class GameEvent implements Keyed, RegistryAware {
   static values(): Array<GameEvent>;
 }
 
-export const enum GameMode {
+export enum GameMode {
   CREATIVE,
   SURVIVAL,
   ADVENTURE,
@@ -868,13 +868,13 @@ export declare class GameRule<T> {
   static values(): GameRule<any>[];
 }
 
-export const enum GrassSpecies {
+export enum GrassSpecies {
   DEAD,
   NORMAL,
   FERN_LIKE,
 }
 
-export const enum HeightMap {
+export enum HeightMap {
   MOTION_BLOCKING,
   MOTION_BLOCKING_NO_LEAVES,
   OCEAN_FLOOR,
@@ -893,7 +893,7 @@ export interface Input {
   isSprint(): boolean;
 }
 
-export const enum Instrument {
+export enum Instrument {
   PIANO,
   BASS_DRUM,
   SNARE_DRUM,
@@ -995,7 +995,7 @@ export declare class Location implements ConfigurationSerializable {
   clone(): any;
 }
 
-export const enum Material {
+export enum Material {
   AIR,
   STONE,
   GRANITE,
@@ -3044,7 +3044,7 @@ export declare class NamespacedKey {
   static fromString(arg0: string): NamespacedKey;
 }
 
-export const enum NetherWartsState {
+export enum NetherWartsState {
   SEEDED,
   STAGE_ONE,
   STAGE_TWO,
@@ -3069,7 +3069,7 @@ export declare class Note {
   toString(): string;
 }
 
-export const enum Note_Tone {
+export enum Note_Tone {
   G,
   A,
   B,
@@ -3118,7 +3118,7 @@ export interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
   getLocation(): Location;
 }
 
-export const enum Particle {
+export enum Particle {
   POOF,
   EXPLOSION,
   EXPLOSION_EMITTER,
@@ -3251,7 +3251,7 @@ export declare class Particle_Trail {
   getDuration(): number;
 }
 
-export const enum PortalType {
+export enum PortalType {
   NETHER,
   ENDER,
   CUSTOM,
@@ -3272,7 +3272,7 @@ export interface Raid {
   getRaiders(): Array<Raider>;
 }
 
-export const enum Raid_RaidStatus {
+export enum Raid_RaidStatus {
   ONGOING,
   VICTORY,
   LOSS,
@@ -3393,7 +3393,7 @@ export declare class Registry_SimpleRegistry<T> implements Registry {
   get(arg0: NamespacedKey): Keyed;
 }
 
-export const enum Rotation {
+export enum Rotation {
   NONE,
   CLOCKWISE_45,
   CLOCKWISE,
@@ -3404,7 +3404,7 @@ export const enum Rotation {
   COUNTER_CLOCKWISE_45,
 }
 
-export const enum SandstoneType {
+export enum SandstoneType {
   CRACKED,
   GLYPHED,
   SMOOTH,
@@ -3601,7 +3601,7 @@ export interface ServerLinks_ServerLink {
   getUrl(): URI;
 }
 
-export const enum ServerLinks_Type {
+export enum ServerLinks_Type {
   REPORT_BUG,
   COMMUNITY_GUIDELINES,
   SUPPORT,
@@ -3630,7 +3630,7 @@ export interface ServerTickManager {
   getFrozenTicksToRun(): number;
 }
 
-export const enum SkullType {
+export enum SkullType {
   SKELETON,
   WITHER,
   ZOMBIE,
@@ -5297,7 +5297,7 @@ export interface Sound extends OldEnum, Keyed, RegistryAware {
   static values(): Sound[];
 }
 
-export const enum SoundCategory {
+export enum SoundCategory {
   MASTER,
   MUSIC,
   RECORDS,
@@ -5320,7 +5320,7 @@ export interface SoundGroup {
   getFallSound(): Sound;
 }
 
-export const enum Statistic {
+export enum Statistic {
   DAMAGE_DEALT,
   DAMAGE_TAKEN,
   DEATHS,
@@ -5406,7 +5406,7 @@ export const enum Statistic {
   STRIDER_ONE_CM,
 }
 
-export const enum Statistic_Type {
+export enum Statistic_Type {
   UNTYPED,
   ITEM,
   BLOCK,
@@ -5791,7 +5791,7 @@ export interface Translatable {
   getTranslationKey(): string;
 }
 
-export const enum TreeSpecies {
+export enum TreeSpecies {
   GENERIC,
   REDWOOD,
   BIRCH,
@@ -5800,7 +5800,7 @@ export const enum TreeSpecies {
   DARK_OAK,
 }
 
-export const enum TreeType {
+export enum TreeType {
   TREE,
   BIG_TREE,
   REDWOOD,
@@ -5894,13 +5894,13 @@ export interface Warning extends Annotation {
   reason(): string;
 }
 
-export const enum Warning_WarningState {
+export enum Warning_WarningState {
   ON,
   OFF,
   DEFAULT,
 }
 
-export const enum WeatherType {
+export enum WeatherType {
   DOWNFALL,
   CLEAR,
 }
@@ -6121,7 +6121,7 @@ export interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
   getStructures(arg0: number, arg1: number, arg2: Structure): Array<GeneratedStructure>;
 }
 
-export const enum World_Environment {
+export enum World_Environment {
   NORMAL,
   NETHER,
   THE_END,
@@ -6190,7 +6190,7 @@ export declare class WorldCreator {
   static getBiomeProviderForName(arg0: string, arg1: string, arg2: CommandSender): BiomeProvider;
 }
 
-export const enum WorldType {
+export enum WorldType {
   NORMAL,
   FLAT,
   LARGE_BIOMES,
@@ -6216,7 +6216,7 @@ export interface AdvancementDisplay {
   getType(): AdvancementDisplayType;
 }
 
-export const enum AdvancementDisplayType {
+export enum AdvancementDisplayType {
   TASK,
   CHALLENGE,
   GOAL,
@@ -6315,7 +6315,7 @@ export declare class AttributeModifier implements ConfigurationSerializable, Key
   static deserialize(arg0: Map<string, any>): AttributeModifier;
 }
 
-export const enum AttributeModifier_Operation {
+export enum AttributeModifier_Operation {
   ADD_NUMBER,
   ADD_SCALAR,
   MULTIPLY_SCALAR_1,
@@ -6501,7 +6501,7 @@ export interface Block extends Metadatable, Translatable {
   canPlace(arg0: BlockData): boolean;
 }
 
-export const enum BlockFace {
+export enum BlockFace {
   NORTH,
   EAST,
   SOUTH,
@@ -6549,7 +6549,7 @@ export interface BlockState extends Metadatable {
   isPlaced(): boolean;
 }
 
-export const enum BlockSupport {
+export enum BlockSupport {
   FULL,
   CENTER,
   RIGID,
@@ -7779,7 +7779,7 @@ export interface DecoratedPot extends TileState, BlockInventoryHolder {
   getInventory(): Inventory;
 }
 
-export const enum DecoratedPot_Side {
+export enum DecoratedPot_Side {
   BACK,
   LEFT,
   RIGHT,
@@ -7888,7 +7888,7 @@ export interface Lockable {
   setLockItem(arg0: ItemStack): void;
 }
 
-export const enum PistonMoveReaction {
+export enum PistonMoveReaction {
   MOVE,
   BREAK,
   BLOCK,
@@ -8106,7 +8106,7 @@ export interface Bisected extends BlockData {
   setHalf(arg0: Bisected_Half): void;
 }
 
-export const enum Bisected_Half {
+export enum Bisected_Half {
   TOP,
   BOTTOM,
 }
@@ -8152,7 +8152,7 @@ export interface FaceAttachable extends BlockData {
   setAttachedFace(arg0: FaceAttachable_AttachedFace): void;
 }
 
-export const enum FaceAttachable_AttachedFace {
+export enum FaceAttachable_AttachedFace {
   FLOOR,
   WALL,
   CEILING,
@@ -8209,7 +8209,7 @@ export interface Rail extends Waterlogged {
   getShapes(): Set<Rail_Shape>;
 }
 
-export const enum Rail_Shape {
+export enum Rail_Shape {
   NORTH_SOUTH,
   EAST_WEST,
   ASCENDING_EAST,
@@ -8246,7 +8246,7 @@ export interface Bamboo extends Ageable, Sapling {
   setLeaves(arg0: Bamboo_Leaves): void;
 }
 
-export const enum Bamboo_Leaves {
+export enum Bamboo_Leaves {
   NONE,
   SMALL,
   LARGE,
@@ -8261,7 +8261,7 @@ export interface Bed extends Directional {
   isOccupied(): boolean;
 }
 
-export const enum Bed_Part {
+export enum Bed_Part {
   HEAD,
   FOOT,
 }
@@ -8277,7 +8277,7 @@ export interface Bell extends Directional, Powerable {
   setAttachment(arg0: Bell_Attachment): void;
 }
 
-export const enum Bell_Attachment {
+export enum Bell_Attachment {
   FLOOR,
   CEILING,
   SINGLE_WALL,
@@ -8289,7 +8289,7 @@ export interface BigDripleaf extends Dripleaf {
   setTilt(arg0: BigDripleaf_Tilt): void;
 }
 
-export const enum BigDripleaf_Tilt {
+export enum BigDripleaf_Tilt {
   NONE,
   UNSTABLE,
   PARTIAL,
@@ -8344,7 +8344,7 @@ export interface Chest extends Directional, Waterlogged {
   setType(arg0: Chest_Type): void;
 }
 
-export const enum Chest_Type {
+export enum Chest_Type {
   SINGLE,
   LEFT,
   RIGHT,
@@ -8370,7 +8370,7 @@ export interface Comparator extends Directional, Powerable {
   setMode(arg0: Comparator_Mode): void;
 }
 
-export const enum Comparator_Mode {
+export enum Comparator_Mode {
   COMPARE,
   SUBTRACT,
 }
@@ -8390,7 +8390,7 @@ export interface Crafter extends BlockData {
   setOrientation(arg0: Crafter_Orientation): void;
 }
 
-export const enum Crafter_Orientation {
+export enum Crafter_Orientation {
   DOWN_EAST,
   DOWN_NORTH,
   DOWN_SOUTH,
@@ -8430,7 +8430,7 @@ export interface Door extends Bisected, Directional, Openable, Powerable {
   setHinge(arg0: Door_Hinge): void;
 }
 
-export const enum Door_Hinge {
+export enum Door_Hinge {
   LEFT,
   RIGHT,
 }
@@ -8493,7 +8493,7 @@ export interface Jigsaw extends BlockData {
   setOrientation(arg0: Jigsaw_Orientation): void;
 }
 
-export const enum Jigsaw_Orientation {
+export enum Jigsaw_Orientation {
   DOWN_EAST,
   DOWN_NORTH,
   DOWN_SOUTH,
@@ -8545,7 +8545,7 @@ export interface MossyCarpet extends BlockData {
   setHeight(arg0: BlockFace, arg1: MossyCarpet_Height): void;
 }
 
-export const enum MossyCarpet_Height {
+export enum MossyCarpet_Height {
   NONE,
   LOW,
   TALL,
@@ -8588,7 +8588,7 @@ export interface PointedDripstone extends Waterlogged {
   setThickness(arg0: PointedDripstone_Thickness): void;
 }
 
-export const enum PointedDripstone_Thickness {
+export enum PointedDripstone_Thickness {
   TIP_MERGE,
   TIP,
   FRUSTUM,
@@ -8608,7 +8608,7 @@ export interface RedstoneWire extends AnaloguePowerable {
   getAllowedFaces(): Set<BlockFace>;
 }
 
-export const enum RedstoneWire_Connection {
+export enum RedstoneWire_Connection {
   UP,
   SIDE,
   NONE,
@@ -8656,7 +8656,7 @@ export interface SculkSensor extends AnaloguePowerable, Waterlogged {
   setPhase(arg0: SculkSensor_Phase): void;
 }
 
-export const enum SculkSensor_Phase {
+export enum SculkSensor_Phase {
   INACTIVE,
   ACTIVE,
   COOLDOWN,
@@ -8690,7 +8690,7 @@ export interface Slab extends Waterlogged {
   setType(arg0: Slab_Type): void;
 }
 
-export const enum Slab_Type {
+export enum Slab_Type {
   TOP,
   BOTTOM,
   DOUBLE,
@@ -8711,7 +8711,7 @@ export interface Stairs extends Bisected, Directional, Waterlogged {
   setShape(arg0: Stairs_Shape): void;
 }
 
-export const enum Stairs_Shape {
+export enum Stairs_Shape {
   STRAIGHT,
   INNER_LEFT,
   INNER_RIGHT,
@@ -8724,7 +8724,7 @@ export interface StructureBlock extends BlockData {
   setMode(arg0: StructureBlock_Mode): void;
 }
 
-export const enum StructureBlock_Mode {
+export enum StructureBlock_Mode {
   SAVE,
   LOAD,
   CORNER,
@@ -8736,7 +8736,7 @@ export interface Switch extends Directional, FaceAttachable, Powerable {
   setFace(arg0: Switch_Face): void;
 }
 
-export const enum Switch_Face {
+export enum Switch_Face {
   FLOOR,
   WALL,
   CEILING,
@@ -8752,7 +8752,7 @@ export interface TechnicalPiston extends Directional {
   setType(arg0: TechnicalPiston_Type): void;
 }
 
-export const enum TechnicalPiston_Type {
+export enum TechnicalPiston_Type {
   NORMAL,
   STICKY,
 }
@@ -8767,7 +8767,7 @@ export interface TrialSpawner extends BlockData {
   setOminous(arg0: boolean): void;
 }
 
-export const enum TrialSpawner_State {
+export enum TrialSpawner_State {
   INACTIVE,
   WAITING_FOR_PLAYERS,
   ACTIVE,
@@ -8800,7 +8800,7 @@ export interface Vault extends Directional {
   setOminous(arg0: boolean): void;
 }
 
-export const enum Vault_State {
+export enum Vault_State {
   INACTIVE,
   ACTIVE,
   UNLOCKING,
@@ -8814,7 +8814,7 @@ export interface Wall extends Waterlogged {
   setHeight(arg0: BlockFace, arg1: Wall_Height): void;
 }
 
-export const enum Wall_Height {
+export enum Wall_Height {
   NONE,
   LOW,
   TALL,
@@ -8830,7 +8830,7 @@ export interface WallSkull extends Directional, Powerable {
 }
 
   // Package: org.bukkit.block.sign
-export const enum Side {
+export enum Side {
   FRONT,
   BACK,
 }
@@ -8883,20 +8883,20 @@ export declare class SpawnerEntry_Equipment {
 }
 
   // Package: org.bukkit.block.structure
-export const enum Mirror {
+export enum Mirror {
   NONE,
   LEFT_RIGHT,
   FRONT_BACK,
 }
 
-export const enum StructureRotation {
+export enum StructureRotation {
   NONE,
   CLOCKWISE_90,
   CLOCKWISE_180,
   COUNTERCLOCKWISE_90,
 }
 
-export const enum UsageMode {
+export enum UsageMode {
   SAVE,
   LOAD,
   CORNER,
@@ -8904,7 +8904,7 @@ export const enum UsageMode {
 }
 
   // Package: org.bukkit.boss
-export const enum BarColor {
+export enum BarColor {
   PINK,
   BLUE,
   RED,
@@ -8914,13 +8914,13 @@ export const enum BarColor {
   WHITE,
 }
 
-export const enum BarFlag {
+export enum BarFlag {
   DARKEN_SKY,
   PLAY_BOSS_MUSIC,
   CREATE_FOG,
 }
 
-export const enum BarStyle {
+export enum BarStyle {
   SOLID,
   SEGMENTED_6,
   SEGMENTED_10,
@@ -8964,7 +8964,7 @@ export interface DragonBattle {
   resetCrystals(): void;
 }
 
-export const enum DragonBattle_RespawnPhase {
+export enum DragonBattle_RespawnPhase {
   START,
   PREPARING_TO_SUMMON_PILLARS,
   SUMMONING_PILLARS,
@@ -9570,7 +9570,7 @@ export declare class Conversation {
   outputNextPrompt(): void;
 }
 
-export const enum Conversation_ConversationState {
+export enum Conversation_ConversationState {
   UNSTARTED,
   STARTED,
   ABANDONED,
@@ -9752,7 +9752,7 @@ export interface DamageEffect {
   getSound(): Sound;
 }
 
-export const enum DamageScaling {
+export enum DamageScaling {
   NEVER,
   WHEN_CAUSED_BY_LIVING_NON_PLAYER,
   ALWAYS,
@@ -9835,7 +9835,7 @@ export interface DamageType extends Keyed, Translatable, RegistryAware {
   getKey(): NamespacedKey;
 }
 
-export const enum DeathMessageType {
+export enum DeathMessageType {
   DEFAULT,
   FALL_VARIANTS,
   INTENTIONAL_GAME_DESIGN,
@@ -9910,7 +9910,7 @@ export declare class EnchantmentOffer {
   setCost(arg0: number): void;
 }
 
-export const enum EnchantmentTarget {
+export enum EnchantmentTarget {
   ALL,
   ARMOR,
   ARMOR_FEET,
@@ -9985,7 +9985,7 @@ export interface AbstractArrow extends Projectile {
   setWeapon(arg0: ItemStack): void;
 }
 
-export const enum AbstractArrow_PickupStatus {
+export enum AbstractArrow_PickupStatus {
   DISALLOWED,
   ALLOWED,
   CREATIVE_ONLY,
@@ -10138,7 +10138,7 @@ export interface ArmorStand extends LivingEntity {
   hasEquipmentLock(arg0: EquipmentSlot, arg1: ArmorStand_LockType): boolean;
 }
 
-export const enum ArmorStand_LockType {
+export enum ArmorStand_LockType {
   ADDING_OR_CHANGING,
   REMOVING_OR_CHANGING,
   ADDING,
@@ -10166,7 +10166,7 @@ export interface Axolotl extends Animals {
   setVariant(arg0: Axolotl_Variant): void;
 }
 
-export const enum Axolotl_Variant {
+export enum Axolotl_Variant {
   LUCY,
   WILD,
   GOLD,
@@ -10218,7 +10218,7 @@ export interface Boat extends Vehicle {
   getStatus(): Boat_Status;
 }
 
-export const enum Boat_Status {
+export enum Boat_Status {
   IN_WATER,
   UNDER_WATER,
   UNDER_FLOWING_WATER,
@@ -10226,7 +10226,7 @@ export const enum Boat_Status {
   IN_AIR,
 }
 
-export const enum Boat_Type {
+export enum Boat_Type {
   OAK,
   SPRUCE,
   BIRCH,
@@ -10382,7 +10382,7 @@ export interface Display extends Entity {
   setBrightness(arg0: Display_Brightness): void;
 }
 
-export const enum Display_Billboard {
+export enum Display_Billboard {
   FIXED,
   VERTICAL,
   HORIZONTAL,
@@ -10430,7 +10430,7 @@ export interface EnderDragon extends ComplexLivingEntity, Boss, Mob, Enemy {
   getDeathAnimationTicks(): number;
 }
 
-export const enum EnderDragon_Phase {
+export enum EnderDragon_Phase {
   CIRCLING,
   STRAFING,
   FLY_TO_PORTAL,
@@ -10570,7 +10570,7 @@ export declare class Entity_Spigot extends CommandSender_Spigot {
   constructor();
 }
 
-export const enum EntityCategory {
+export enum EntityCategory {
   NONE,
   UNDEAD,
   ARTHROPOD,
@@ -10589,7 +10589,7 @@ export interface EntitySnapshot {
   getAsString(): string;
 }
 
-export const enum EntityType {
+export enum EntityType {
   ITEM,
   EXPERIENCE_ORB,
   AREA_EFFECT_CLOUD,
@@ -10747,7 +10747,7 @@ export interface Evoker extends Spellcaster {
   setCurrentSpell(arg0: Evoker_Spell): void;
 }
 
-export const enum Evoker_Spell {
+export enum Evoker_Spell {
   NONE,
   SUMMON,
   FANGS,
@@ -10846,7 +10846,7 @@ export interface FishHook extends Projectile {
   getState(): FishHook_HookState;
 }
 
-export const enum FishHook_HookState {
+export enum FishHook_HookState {
   UNHOOKED,
   HOOKED_ENTITY,
   BOBBING,
@@ -10868,7 +10868,7 @@ export interface Fox extends Animals, Sittable {
   isFaceplanted(): boolean;
 }
 
-export const enum Fox_Type {
+export enum Fox_Type {
   RED,
   SNOW,
 }
@@ -10954,7 +10954,7 @@ export interface Horse extends AbstractHorse {
   getInventory(): Inventory;
 }
 
-export const enum Horse_Color {
+export enum Horse_Color {
   WHITE,
   CREAMY,
   CHESTNUT,
@@ -10964,7 +10964,7 @@ export const enum Horse_Color {
   DARK_BROWN,
 }
 
-export const enum Horse_Style {
+export enum Horse_Style {
   NONE,
   WHITE,
   WHITEFIELD,
@@ -10972,7 +10972,7 @@ export const enum Horse_Style {
   BLACK_DOTS,
 }
 
-export const enum Horse_Variant {
+export enum Horse_Variant {
   HORSE,
   DONKEY,
   MULE,
@@ -11101,7 +11101,7 @@ export interface ItemDisplay extends Display {
   setItemDisplayTransform(arg0: ItemDisplay_ItemDisplayTransform): void;
 }
 
-export const enum ItemDisplay_ItemDisplayTransform {
+export enum ItemDisplay_ItemDisplayTransform {
   NONE,
   THIRDPERSON_LEFTHAND,
   THIRDPERSON_RIGHTHAND,
@@ -11243,7 +11243,7 @@ export interface Llama extends ChestedHorse {
   getInventory(): Inventory;
 }
 
-export const enum Llama_Color {
+export enum Llama_Color {
   CREAMY,
   WHITE,
   BROWN,
@@ -11303,7 +11303,7 @@ export interface MushroomCow extends Cow {
   setVariant(arg0: MushroomCow_Variant): void;
 }
 
-export const enum MushroomCow_Variant {
+export enum MushroomCow_Variant {
   RED,
   BROWN,
 }
@@ -11318,7 +11318,7 @@ export interface Ocelot extends Animals {
   setCatType(arg0: Ocelot_Type): void;
 }
 
-export const enum Ocelot_Type {
+export enum Ocelot_Type {
   WILD_OCELOT,
   BLACK_CAT,
   RED_CAT,
@@ -11355,7 +11355,7 @@ export interface Panda extends Animals, Sittable {
   getUnhappyTicks(): number;
 }
 
-export const enum Panda_Gene {
+export enum Panda_Gene {
   NORMAL,
   LAZY,
   WORRIED,
@@ -11371,7 +11371,7 @@ export interface Parrot extends Tameable, Sittable {
   isDancing(): boolean;
 }
 
-export const enum Parrot_Variant {
+export enum Parrot_Variant {
   RED,
   BLUE,
   GREEN,
@@ -11623,7 +11623,7 @@ export declare class Player_Spigot extends Entity_Spigot {
 export interface PolarBear extends Animals {
 }
 
-export const enum Pose {
+export enum Pose {
   STANDING,
   FALL_FLYING,
   SLEEPING,
@@ -11661,7 +11661,7 @@ export interface Rabbit extends Animals {
   setRabbitType(arg0: Rabbit_Type): void;
 }
 
-export const enum Rabbit_Type {
+export enum Rabbit_Type {
   BROWN,
   WHITE,
   BLACK,
@@ -11697,7 +11697,7 @@ export interface Salmon extends Fish {
   setVariant(arg0: Salmon_Variant): void;
 }
 
-export const enum Salmon_Variant {
+export enum Salmon_Variant {
   SMALL,
   MEDIUM,
   LARGE,
@@ -11742,7 +11742,7 @@ export interface Skeleton extends AbstractSkeleton {
   setConversionTime(arg0: number): void;
 }
 
-export const enum Skeleton_SkeletonType {
+export enum Skeleton_SkeletonType {
   NORMAL,
   WITHER,
   STRAY,
@@ -11774,7 +11774,7 @@ export interface Sniffer extends Animals {
   canDig(): boolean;
 }
 
-export const enum Sniffer_State {
+export enum Sniffer_State {
   IDLING,
   FEELING_HAPPY,
   SCENTING,
@@ -11792,7 +11792,7 @@ export interface Snowman extends Golem {
   setDerp(arg0: boolean): void;
 }
 
-export const enum SpawnCategory {
+export enum SpawnCategory {
   MONSTER,
   ANIMAL,
   WATER_ANIMAL,
@@ -11813,7 +11813,7 @@ export interface Spellcaster extends Illager {
   setSpell(arg0: Spellcaster_Spell): void;
 }
 
-export const enum Spellcaster_Spell {
+export enum Spellcaster_Spell {
   NONE,
   SUMMON_VEX,
   FANGS,
@@ -11887,7 +11887,7 @@ export interface TextDisplay extends Display {
   setAlignment(arg0: TextDisplay_TextAlignment): void;
 }
 
-export const enum TextDisplay_TextAlignment {
+export enum TextDisplay_TextAlignment {
   CENTER,
   LEFT,
   RIGHT,
@@ -11925,7 +11925,7 @@ export interface TropicalFish extends Fish {
   setPattern(arg0: TropicalFish_Pattern): void;
 }
 
-export const enum TropicalFish_Pattern {
+export enum TropicalFish_Pattern {
   KOB,
   SUNSTREAK,
   SNOOPER,
@@ -12062,7 +12062,7 @@ export interface Warden extends Monster {
   getAngerLevel(): Warden_AngerLevel;
 }
 
-export const enum Warden_AngerLevel {
+export enum Warden_AngerLevel {
   CALM,
   AGITATED,
   ANGRY,
@@ -12086,7 +12086,7 @@ export interface Wither extends Monster, Boss {
   setInvulnerabilityTicks(arg0: number): void;
 }
 
-export const enum Wither_Head {
+export enum Wither_Head {
   CENTER,
   LEFT,
   RIGHT,
@@ -12307,7 +12307,7 @@ export declare abstract class Event {
   isAsynchronous(): boolean;
 }
 
-export const enum Event_Result {
+export enum Event_Result {
   DENY,
   DEFAULT,
   ALLOW,
@@ -12326,7 +12326,7 @@ export interface EventHandler extends Annotation {
   ignoreCancelled(): boolean;
 }
 
-export const enum EventPriority {
+export enum EventPriority {
   LOWEST,
   LOW,
   NORMAL,
@@ -12356,7 +12356,7 @@ export interface Listener {
 }
 
   // Package: org.bukkit.event.block
-export const enum Action {
+export enum Action {
   LEFT_CLICK_BLOCK,
   RIGHT_CLICK_BLOCK,
   LEFT_CLICK_AIR,
@@ -12583,7 +12583,7 @@ export declare class BlockIgniteEvent extends BlockEvent implements Cancellable 
   static getHandlerList(): HandlerList;
 }
 
-export const enum BlockIgniteEvent_IgniteCause {
+export enum BlockIgniteEvent_IgniteCause {
   LAVA,
   FLINT_AND_STEEL,
   SPREAD,
@@ -12726,7 +12726,7 @@ export declare class CauldronLevelChangeEvent extends BlockEvent implements Canc
   static getHandlerList(): HandlerList;
 }
 
-export const enum CauldronLevelChangeEvent_ChangeReason {
+export enum CauldronLevelChangeEvent_ChangeReason {
   BUCKET_FILL,
   BUCKET_EMPTY,
   BOTTLE_FILL,
@@ -12848,7 +12848,7 @@ export declare class TNTPrimeEvent extends BlockEvent implements Cancellable {
   static getHandlerList(): HandlerList;
 }
 
-export const enum TNTPrimeEvent_PrimeCause {
+export enum TNTPrimeEvent_PrimeCause {
   FIRE,
   REDSTONE,
   PLAYER,
@@ -12944,7 +12944,7 @@ export declare class CreatureSpawnEvent extends EntitySpawnEvent {
   getEntity(): Entity;
 }
 
-export const enum CreatureSpawnEvent_SpawnReason {
+export enum CreatureSpawnEvent_SpawnReason {
   NATURAL,
   JOCKEY,
   CHUNK_GEN,
@@ -13002,7 +13002,7 @@ export declare class CreeperPowerEvent extends EntityEvent implements Cancellabl
   getEntity(): Entity;
 }
 
-export const enum CreeperPowerEvent_PowerCause {
+export enum CreeperPowerEvent_PowerCause {
   LIGHTNING,
   SET_ON,
   SET_OFF,
@@ -13133,7 +13133,7 @@ export declare class EntityDamageEvent extends EntityEvent implements Cancellabl
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityDamageEvent_DamageCause {
+export enum EntityDamageEvent_DamageCause {
   KILL,
   WORLD_BORDER,
   CONTACT,
@@ -13169,7 +13169,7 @@ export const enum EntityDamageEvent_DamageCause {
   SONIC_BOOM,
 }
 
-export const enum EntityDamageEvent_DamageModifier {
+export enum EntityDamageEvent_DamageModifier {
   BASE,
   FREEZING,
   HARD_HAT,
@@ -13253,7 +13253,7 @@ export declare class EntityExhaustionEvent extends EntityEvent implements Cancel
   getEntity(): Entity;
 }
 
-export const enum EntityExhaustionEvent_ExhaustionReason {
+export enum EntityExhaustionEvent_ExhaustionReason {
   BLOCK_MINED,
   HUNGER_EFFECT,
   DAMAGED,
@@ -13313,7 +13313,7 @@ export declare class EntityKnockbackEvent extends EntityEvent implements Cancell
   getEntity(): Entity;
 }
 
-export const enum EntityKnockbackEvent_KnockbackCause {
+export enum EntityKnockbackEvent_KnockbackCause {
   DAMAGE,
   ENTITY_ATTACK,
   EXPLOSION,
@@ -13408,14 +13408,14 @@ export declare class EntityPotionEffectEvent extends EntityEvent implements Canc
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityPotionEffectEvent_Action {
+export enum EntityPotionEffectEvent_Action {
   ADDED,
   CHANGED,
   CLEARED,
   REMOVED,
 }
 
-export const enum EntityPotionEffectEvent_Cause {
+export enum EntityPotionEffectEvent_Cause {
   AREA_EFFECT_CLOUD,
   ARROW,
   ATTACK,
@@ -13454,7 +13454,7 @@ export declare class EntityRegainHealthEvent extends EntityEvent implements Canc
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityRegainHealthEvent_RegainReason {
+export enum EntityRegainHealthEvent_RegainReason {
   REGEN,
   SATIATED,
   EATING,
@@ -13473,7 +13473,7 @@ export declare class EntityRemoveEvent extends EntityEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityRemoveEvent_Cause {
+export enum EntityRemoveEvent_Cause {
   DEATH,
   DESPAWN,
   DROP,
@@ -13561,7 +13561,7 @@ export declare class EntityTargetEvent extends EntityEvent implements Cancellabl
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityTargetEvent_TargetReason {
+export enum EntityTargetEvent_TargetReason {
   TARGET_DIED,
   CLOSEST_PLAYER,
   TARGET_ATTACKED_ENTITY,
@@ -13629,7 +13629,7 @@ export declare class EntityTransformEvent extends EntityEvent implements Cancell
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityTransformEvent_TransformReason {
+export enum EntityTransformEvent_TransformReason {
   CURED,
   FROZEN,
   INFECTION,
@@ -13649,7 +13649,7 @@ export declare class EntityUnleashEvent extends EntityEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum EntityUnleashEvent_UnleashReason {
+export enum EntityUnleashEvent_UnleashReason {
   HOLDER_GONE,
   PLAYER_UNLEASH,
   DISTANCE,
@@ -13955,7 +13955,7 @@ export declare class VillagerCareerChangeEvent extends EntityEvent implements Ca
   getEntity(): Entity;
 }
 
-export const enum VillagerCareerChangeEvent_ChangeReason {
+export enum VillagerCareerChangeEvent_ChangeReason {
   LOSING_JOB,
   EMPLOYED,
 }
@@ -14008,7 +14008,7 @@ export declare class HangingBreakEvent extends HangingEvent implements Cancellab
   static getHandlerList(): HandlerList;
 }
 
-export const enum HangingBreakEvent_RemoveCause {
+export enum HangingBreakEvent_RemoveCause {
   ENTITY,
   EXPLOSION,
   OBSTRUCTION,
@@ -14061,7 +14061,7 @@ export declare class BrewingStandFuelEvent extends BlockEvent implements Cancell
   static getHandlerList(): HandlerList;
 }
 
-export const enum ClickType {
+export enum ClickType {
   LEFT,
   SHIFT_LEFT,
   RIGHT,
@@ -14086,7 +14086,7 @@ export declare class CraftItemEvent extends InventoryClickEvent {
   getInventory(): Inventory;
 }
 
-export const enum DragType {
+export enum DragType {
   SINGLE,
   EVEN,
 }
@@ -14134,12 +14134,12 @@ export declare class HopperInventorySearchEvent extends BlockEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum HopperInventorySearchEvent_ContainerType {
+export enum HopperInventorySearchEvent_ContainerType {
   SOURCE,
   DESTINATION,
 }
 
-export const enum InventoryAction {
+export enum InventoryAction {
   NOTHING,
   PICKUP_ALL,
   PICKUP_SOME,
@@ -14259,7 +14259,7 @@ export declare class InventoryPickupItemEvent extends Event implements Cancellab
   static getHandlerList(): HandlerList;
 }
 
-export const enum InventoryType {
+export enum InventoryType {
   CHEST,
   DISPENSER,
   DROPPER,
@@ -14292,7 +14292,7 @@ export const enum InventoryType {
   SMITHING_NEW,
 }
 
-export const enum InventoryType_SlotType {
+export enum InventoryType_SlotType {
   RESULT,
   CRAFTING,
   ARMOR,
@@ -14406,7 +14406,7 @@ export declare class AsyncPlayerPreLoginEvent extends Event {
   static getHandlerList(): HandlerList;
 }
 
-export const enum AsyncPlayerPreLoginEvent_Result {
+export enum AsyncPlayerPreLoginEvent_Result {
   ALLOWED,
   KICK_FULL,
   KICK_BANNED,
@@ -14431,7 +14431,7 @@ export declare class PlayerAnimationEvent extends PlayerEvent implements Cancell
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerAnimationType {
+export enum PlayerAnimationType {
   ARM_SWING,
   OFF_ARM_SWING,
 }
@@ -14462,7 +14462,7 @@ export declare class PlayerBedEnterEvent extends PlayerEvent implements Cancella
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerBedEnterEvent_BedEnterResult {
+export enum PlayerBedEnterEvent_BedEnterResult {
   OK,
   NOT_POSSIBLE_HERE,
   NOT_POSSIBLE_NOW,
@@ -14657,7 +14657,7 @@ export declare class PlayerExpCooldownChangeEvent extends PlayerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerExpCooldownChangeEvent_ChangeReason {
+export enum PlayerExpCooldownChangeEvent_ChangeReason {
   PICKUP_ORB,
   PLUGIN,
 }
@@ -14677,7 +14677,7 @@ export declare class PlayerFishEvent extends PlayerEvent implements Cancellable 
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerFishEvent_State {
+export enum PlayerFishEvent_State {
   FISHING,
   CAUGHT_FISH,
   CAUGHT_ENTITY,
@@ -14883,7 +14883,7 @@ export declare class PlayerLoginEvent extends PlayerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerLoginEvent_Result {
+export enum PlayerLoginEvent_Result {
   ALLOWED,
   KICK_FULL,
   KICK_BANNED,
@@ -14948,7 +14948,7 @@ export declare class PlayerPreLoginEvent extends Event {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerPreLoginEvent_Result {
+export enum PlayerPreLoginEvent_Result {
   ALLOWED,
   KICK_FULL,
   KICK_BANNED,
@@ -14984,7 +14984,7 @@ export declare class PlayerRecipeBookSettingsChangeEvent extends PlayerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerRecipeBookSettingsChangeEvent_RecipeBookType {
+export enum PlayerRecipeBookSettingsChangeEvent_RecipeBookType {
   CRAFTING,
   FURNACE,
   BLAST_FURNACE,
@@ -15012,7 +15012,7 @@ export declare class PlayerResourcePackStatusEvent extends PlayerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerResourcePackStatusEvent_Status {
+export enum PlayerResourcePackStatusEvent_Status {
   SUCCESSFULLY_LOADED,
   DECLINED,
   FAILED_DOWNLOAD,
@@ -15036,7 +15036,7 @@ export declare class PlayerRespawnEvent extends PlayerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerRespawnEvent_RespawnReason {
+export enum PlayerRespawnEvent_RespawnReason {
   DEATH,
   END_PORTAL,
   PLUGIN,
@@ -15081,7 +15081,7 @@ export declare class PlayerSignOpenEvent extends PlayerEvent implements Cancella
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerSignOpenEvent_Cause {
+export enum PlayerSignOpenEvent_Cause {
   INTERACT,
   PLACE,
   PLUGIN,
@@ -15101,7 +15101,7 @@ export declare class PlayerSpawnChangeEvent extends PlayerEvent implements Cance
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerSpawnChangeEvent_Cause {
+export enum PlayerSpawnChangeEvent_Cause {
   COMMAND,
   BED,
   RESPAWN_ANCHOR,
@@ -15156,7 +15156,7 @@ export declare class PlayerTeleportEvent extends PlayerMoveEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum PlayerTeleportEvent_TeleportCause {
+export enum PlayerTeleportEvent_TeleportCause {
   ENDER_PEARL,
   COMMAND,
   PLUGIN,
@@ -15248,7 +15248,7 @@ export declare class RaidStopEvent extends RaidEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum RaidStopEvent_Reason {
+export enum RaidStopEvent_Reason {
   PEACE,
   TIMEOUT,
   FINISHED,
@@ -15348,7 +15348,7 @@ export declare class ServerLoadEvent extends ServerEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum ServerLoadEvent_LoadType {
+export enum ServerLoadEvent_LoadType {
   STARTUP,
   RELOAD,
 }
@@ -15485,7 +15485,7 @@ export declare class LightningStrikeEvent extends WeatherEvent implements Cancel
   static getHandlerList(): HandlerList;
 }
 
-export const enum LightningStrikeEvent_Cause {
+export enum LightningStrikeEvent_Cause {
   COMMAND,
   CUSTOM,
   SPAWNER,
@@ -15542,7 +15542,7 @@ export declare class AsyncStructureGenerateEvent extends WorldEvent {
   static getHandlerList(): HandlerList;
 }
 
-export const enum AsyncStructureGenerateEvent_Cause {
+export enum AsyncStructureGenerateEvent_Cause {
   COMMAND,
   WORLD_GENERATION,
   CUSTOM,
@@ -15642,7 +15642,7 @@ export declare class PortalCreateEvent extends WorldEvent implements Cancellable
   static getHandlerList(): HandlerList;
 }
 
-export const enum PortalCreateEvent_CreateReason {
+export enum PortalCreateEvent_CreateReason {
   FIRE,
   NETHER_PAIR,
   END_PLATFORM,
@@ -15679,7 +15679,7 @@ export declare class TimeSkipEvent extends WorldEvent implements Cancellable {
   static getHandlerList(): HandlerList;
 }
 
-export const enum TimeSkipEvent_SkipReason {
+export enum TimeSkipEvent_SkipReason {
   COMMAND,
   CUSTOM,
   NIGHT_SKIP,
@@ -16052,7 +16052,7 @@ export declare abstract class CraftingRecipe implements Recipe, Keyed {
   static checkResult(arg0: ItemStack): ItemStack;
 }
 
-export const enum CreativeCategory {
+export enum CreativeCategory {
   BUILDING_BLOCKS,
   DECORATIONS,
   REDSTONE,
@@ -16129,7 +16129,7 @@ export interface EntityEquipment {
   getHolder(): Entity;
 }
 
-export const enum EquipmentSlot {
+export enum EquipmentSlot {
   HAND,
   OFF_HAND,
   FEET,
@@ -16252,7 +16252,7 @@ export interface InventoryView {
   setTitle(arg0: string): void;
 }
 
-export const enum InventoryView_Property {
+export enum InventoryView_Property {
   BREW_TIME,
   FUEL_TIME,
   BURN_TIME,
@@ -16297,7 +16297,7 @@ export interface ItemFactory {
   enchantItem(arg0: ItemStack, arg1: number, arg2: boolean): ItemStack;
 }
 
-export const enum ItemFlag {
+export enum ItemFlag {
   HIDE_ENCHANTS,
   HIDE_ATTRIBUTES,
   HIDE_UNBREAKABLE,
@@ -16308,7 +16308,7 @@ export const enum ItemFlag {
   HIDE_ARMOR_TRIM,
 }
 
-export const enum ItemRarity {
+export enum ItemRarity {
   COMMON,
   UNCOMMON,
   RARE,
@@ -17788,7 +17788,7 @@ export interface LlamaInventory extends AbstractHorseInventory {
 export interface LoomInventory extends Inventory {
 }
 
-export const enum MainHand {
+export enum MainHand {
   LEFT,
   RIGHT,
 }
@@ -18086,7 +18086,7 @@ export interface BookMeta extends WritableBookMeta {
   clone(): ItemMeta;
 }
 
-export const enum BookMeta_Generation {
+export enum BookMeta_Generation {
   ORIGINAL,
   COPY_OF_ORIGINAL,
   COPY_OF_COPY,
@@ -18519,7 +18519,7 @@ export interface ConsumableComponent extends ConfigurationSerializable {
   addEffect(arg0: ConsumableEffect): ConsumableEffect;
 }
 
-export const enum ConsumableComponent_Animation {
+export enum ConsumableComponent_Animation {
   DRINK,
   EAT,
   NONE,
@@ -18649,13 +18649,13 @@ export interface TrimPattern extends Keyed, Translatable, RegistryAware {
 }
 
   // Package: org.bukkit.inventory.recipe
-export const enum CookingBookCategory {
+export enum CookingBookCategory {
   FOOD,
   BLOCKS,
   MISC,
 }
 
-export const enum CraftingBookCategory {
+export enum CraftingBookCategory {
   BUILDING,
   REDSTONE,
   EQUIPMENT,
@@ -18797,7 +18797,7 @@ export interface LootTable extends Keyed {
   fillInventory(arg0: Inventory, arg1: Random, arg2: LootContext): void;
 }
 
-export const enum LootTables {
+export enum LootTables {
   ABANDONED_MINESHAFT,
   BURIED_TREASURE,
   DESERT_PYRAMID,
@@ -19185,7 +19185,7 @@ export interface MapView {
   setLocked(arg0: boolean): void;
 }
 
-export const enum MapView_Scale {
+export enum MapView_Scale {
   CLOSEST,
   CLOSE,
   NORMAL,
@@ -19325,7 +19325,7 @@ export declare class CocoaPlant extends MaterialData implements Directional, Att
 export declare class CocoaPlant_1 {
 }
 
-export const enum CocoaPlant_CocoaPlantSize {
+export enum CocoaPlant_CocoaPlantSize {
   SMALL,
   MEDIUM,
   LARGE,
@@ -20181,7 +20181,7 @@ export declare class Wool extends MaterialData implements Colorable {
 }
 
   // Package: org.bukkit.material.types
-export const enum MushroomBlockTexture {
+export enum MushroomBlockTexture {
   ALL_PORES,
   CAP_NORTH_WEST,
   CAP_NORTH,
@@ -20212,7 +20212,7 @@ export declare class LazyMetadataValue extends MetadataValueAdapter {
   invalidate(): void;
 }
 
-export const enum LazyMetadataValue_CacheStrategy {
+export enum LazyMetadataValue_CacheStrategy {
   CACHE_AFTER_FIRST_EVAL,
   NEVER_CACHE,
   CACHE_ETERNALLY,
@@ -20291,13 +20291,13 @@ export interface DataPack extends Keyed {
   getSource(): DataPack_Source;
 }
 
-export const enum DataPack_Compatibility {
+export enum DataPack_Compatibility {
   NEW,
   OLD,
   COMPATIBLE,
 }
 
-export const enum DataPack_Source {
+export enum DataPack_Source {
   DEFAULT,
   BUILT_IN,
   FEATURE,
@@ -20409,7 +20409,7 @@ export declare class PermissionAttachmentInfo {
   getValue(): boolean;
 }
 
-export const enum PermissionDefault {
+export enum PermissionDefault {
   TRUE,
   FALSE,
   OP,
@@ -20570,7 +20570,7 @@ export interface Plugin extends TabExecutor {
 export interface PluginAwareness {
 }
 
-export const enum PluginAwareness_Flags {
+export enum PluginAwareness_Flags {
   UTF8,
 }
 
@@ -20635,7 +20635,7 @@ export declare class PluginDescriptionResolver extends Resolver {
   addImplicitResolvers(): void;
 }
 
-export const enum PluginLoadOrder {
+export enum PluginLoadOrder {
   STARTUP,
   POSTWORLD,
 }
@@ -20706,7 +20706,7 @@ export declare class RegisteredServiceProvider<T> {
   compareTo(arg0: any): number;
 }
 
-export const enum ServicePriority {
+export enum ServicePriority {
   Lowest,
   Low,
   Normal,
@@ -20907,7 +20907,7 @@ export interface Messenger {
   dispatchIncomingMessage(arg0: Player, arg1: string, arg2: number[]): void;
 }
 
-export const enum PluginChannelDirection {
+export enum PluginChannelDirection {
   INCOMING,
   OUTGOING,
 }
@@ -21057,7 +21057,7 @@ export declare abstract class PotionEffectType implements Keyed, Translatable, R
   static values(): PotionEffectType[];
 }
 
-export const enum PotionEffectTypeCategory {
+export enum PotionEffectTypeCategory {
   BENEFICIAL,
   HARMFUL,
   NEUTRAL,
@@ -21068,7 +21068,7 @@ export declare abstract class PotionEffectTypeWrapper extends PotionEffectType {
   getType(): PotionEffectType;
 }
 
-export const enum PotionType {
+export enum PotionType {
   WATER,
   MUNDANE,
   THICK,
@@ -21150,7 +21150,7 @@ export interface PlayerTextures {
   isSigned(): boolean;
 }
 
-export const enum PlayerTextures_SkinModel {
+export enum PlayerTextures_SkinModel {
   CLASSIC,
   SLIM,
 }
@@ -21301,7 +21301,7 @@ export declare class Criterias {
   static readonly DEATHS: string;
 }
 
-export const enum DisplaySlot {
+export enum DisplaySlot {
   BELOW_NAME,
   PLAYER_LIST,
   SIDEBAR,
@@ -21323,7 +21323,7 @@ export const enum DisplaySlot {
   SIDEBAR_WHITE,
 }
 
-export const enum NameTagVisibility {
+export enum NameTagVisibility {
   ALWAYS,
   NEVER,
   HIDE_FOR_OTHER_TEAMS,
@@ -21347,7 +21347,7 @@ export interface Objective {
   getScore(arg0: string): Score;
 }
 
-export const enum RenderType {
+export enum RenderType {
   INTEGER,
   HEARTS,
 }
@@ -21423,13 +21423,13 @@ export interface Team {
   setOption(arg0: Team_Option, arg1: Team_OptionStatus): void;
 }
 
-export const enum Team_Option {
+export enum Team_Option {
   NAME_TAG_VISIBILITY,
   DEATH_MESSAGE_VISIBILITY,
   COLLISION_RULE,
 }
 
-export const enum Team_OptionStatus {
+export enum Team_OptionStatus {
   ALWAYS,
   NEVER,
   FOR_OTHER_TEAMS,
