@@ -1,3 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+catalogs:
+  build:
+    typescript: ^5.9.3

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "node20",
+    "declaration": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "allowUnreachableCode": false
+  }
+}

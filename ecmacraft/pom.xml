@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dev.twlite.ecmacraft</groupId>
+  <artifactId>ecmacraft</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>ecmacraft</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <java.version>21</java.version>
+    <spigot.version>1.21.1-R0.1-SNAPSHOT</spigot.version>
+    <graalvm.version>24.0.0</graalvm.version>
+  </properties>
+
+  <repositories>
+    <!-- Spigot repo for server API -->
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- Spigot -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.21.1-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- GraalVM Polyglot API -->
+    <dependency>
+        <groupId>org.graalvm.sdk</groupId>
+        <artifactId>graal-sdk</artifactId>
+        <version>24.0.1</version>
+    </dependency>
+
+    <!-- JavaScript engine -->
+    <dependency>
+        <groupId>org.graalvm.js</groupId>
+        <artifactId>js-scriptengine</artifactId>
+        <version>24.0.1</version>
+    </dependency>
+
+    <!-- Optional: script engine bridge -->
+    <dependency>
+        <groupId>org.graalvm.js</groupId>
+        <artifactId>js-scriptengine</artifactId>
+        <version>24.0.1</version>
+    </dependency>
+    <!-- jar -->
+    <dependency>
+        <groupId>org.graalvm.truffle</groupId>
+        <artifactId>truffle-api</artifactId>
+        <version>24.0.1</version>
+    </dependency>
+</dependencies>
+
+
+  <build>
+    <plugins>
+      <!-- Compiler plugin -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+
+      <!-- Shade plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <relocations>
+                <!-- optional relocation rules -->
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
