@@ -1,3 +1,4 @@
+// This is a plugin from Dream's video https://www.youtube.com/watch?v=oHKcQ184aa8
 import { Event, PluginContext, SpigotEventType } from '@ecmacraft/types';
 import * as Spigot from '@ecmacraft/types/spigot';
 
