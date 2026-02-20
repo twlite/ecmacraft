@@ -1,0 +1,126 @@
+---
+title: Configuration
+description: Configure EcmaCraft development and production behavior
+---
+
+EcmaCraft reads config from one of these files in your project root:
+
+- `ecmacraft.config.mjs`
+- `ecmacraft.config.js`
+- `ecmacraft.config.cjs`
+- `ecmacraft.config.mts`
+- `ecmacraft.config.ts`
+- `ecmacraft.config.cts`
+
+The config is merged with EcmaCraft defaults, so you only need to define the fields you want to override.
+
+## Example
+
+```ts
+import { defineConfig } from 'ecmacraft/config';
+
+export default defineConfig({
+  development: {
+    paperVersion: 'latest',
+    javaArgs: ['-Xmx2G', '-Xms512M'],
+    reloadType: 'soft',
+    serverProperties: {
+      'online-mode': false,
+      'level-seed': 'ecmacraft-local-seed',
+      'server-port': 25566,
+      'query.port': 25566,
+      motd: 'EcmaCraft Local Dev Server',
+    },
+    esbuildConfig: {},
+  },
+  production: {
+    paperVersion: 'latest',
+    esbuildConfig: {},
+  },
+});
+```
+
+## Key Fields
+
+### `development.paperVersion`
+
+PaperMC version hint for dev server setup (for example `latest` or `1.21`).
+
+### `development.javaArgs`
+
+JVM arguments used when launching the local Paper process.
+
+### `development.reloadType`
+
+Controls what happens after a successful rebuild:
+
+- `soft`: runs `ecmacraft-reload`
+- `hard`: runs `reload confirm`
+- `none`: no command is sent
+
+### `development.esbuildConfig`
+
+Extra esbuild options merged into dev bundling.
+
+### `development.serverProperties`
+
+An object used to generate `.ecmacraft/development/server.properties` before the server starts.
+
+Use this for all common server tuning during local development:
+
+- world seed and world generation,
+- online/offline mode,
+- server/query/rcon ports,
+- simulation/view distance,
+- whitelist, MOTD, and gameplay defaults.
+
+#### Example: seed + offline mode + custom ports
+
+```ts
+export default defineConfig({
+  development: {
+    serverProperties: {
+      'online-mode': false,
+      'level-seed': 'my-seeded-test-world',
+      'server-port': 25570,
+      'query.port': 25570,
+      'rcon.port': 25580,
+      'enable-rcon': true,
+      'rcon.password': 'local-dev-only',
+    },
+  },
+});
+```
+
+#### Example: multiple local projects without port collision
+
+```ts
+export default defineConfig({
+  development: {
+    serverProperties: {
+      'server-port': 25571,
+      'query.port': 25571,
+      'online-mode': false,
+      motd: 'Plugin A dev server',
+    },
+  },
+});
+```
+
+### How values are written
+
+- boolean values become `true` / `false`,
+- numbers are serialized as numeric strings,
+- strings are written as-is with Java properties escaping where required.
+
+So a config value like:
+
+```ts
+{ 'level-type': 'minecraft:normal' }
+```
+
+is emitted correctly in `server.properties` format.
+
+### `production.esbuildConfig`
+
+Extra esbuild options merged into production bundling.

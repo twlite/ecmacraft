@@ -1,0 +1,87 @@
+---
+title: Getting Started
+description: Scaffold your first EcmaCraft plugin project
+---
+
+This guide takes you from an empty folder to a running Paper development server powered by EcmaCraft.
+
+## Prerequisites
+
+- Node.js 18+
+- Java 21+
+- A package manager (`pnpm`, `npm`, `yarn`, or `bun`)
+- Internet access for first-time Paper/EcmaCraft runtime downloads
+
+## Create a Plugin Project
+
+Use the project generator:
+
+```bash
+pnpm create ecmacraft my-plugin
+```
+
+You can also run it with `npm`, `yarn`, or `bun`:
+
+```bash
+npm create ecmacraft@latest my-plugin
+```
+
+The template includes:
+
+- `src/main.ts` plugin entrypoint,
+- `ecmacraft.config.ts` for dev/prod config,
+- scripts that map `pnpm dev` → `ecmacraft dev` and `pnpm build` → `ecmacraft build`.
+
+## Start Development
+
+Move into your project and run dev mode:
+
+```bash
+cd my-plugin
+pnpm dev
+```
+
+The `dev` script runs `ecmacraft dev`, which:
+
+- bundles your `src/main.ts` entry,
+- prepares `.ecmacraft/development` with `server.jar`, `server.properties`, and plugin runtime files,
+- watches your source files and rebuilds on changes,
+- triggers server/plugin reload commands after successful rebuilds.
+
+### First Run Notes
+
+- First run is slower because server binaries are downloaded.
+- EcmaCraft writes `eula=true` automatically for the local development server.
+- You can type Paper console commands directly in the same terminal while `ecmacraft dev` is running.
+
+## Customize Dev Server Basics
+
+Open `ecmacraft.config.ts` and set development `serverProperties`:
+
+```ts
+import { defineConfig } from 'ecmacraft/config';
+
+export default defineConfig({
+  development: {
+    serverProperties: {
+      'online-mode': false,
+      'level-seed': 'my-local-seed',
+      'server-port': 25566,
+      motd: 'My EcmaCraft Dev Server',
+    },
+  },
+});
+```
+
+This is the fastest way to configure ports, seed, online/offline mode, and world behavior for local testing.
+
+## Produce a Release Build
+
+```bash
+pnpm build
+```
+
+This runs `ecmacraft build` and outputs production artifacts to `dist/`:
+
+- `dist/main.js` (your minified plugin bundle)
+- `dist/ecmacraft.jar` (host jar with embedded runtime JavaScript)

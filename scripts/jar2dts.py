@@ -251,24 +251,66 @@ KNOWN_TYPES = {
     'java/util/function/Predicate': 'Function',
 }
 
-def java_class_to_ts(class_path: str) -> str:
+def build_type_name_map(classes: list[JavaClass]) -> dict[str, str]:
+    """Build a stable map from JVM class path to unique TypeScript type names."""
+    by_base: dict[str, list[str]] = {}
+    for jc in classes:
+        class_path = jc.class_name
+        base_name = sanitize_name(class_path.split('/')[-1].replace('$', '_'))
+        by_base.setdefault(base_name, []).append(class_path)
+
+    used: set[str] = set()
+    mapping: dict[str, str] = {}
+
+    for base_name, class_paths in sorted(by_base.items(), key=lambda item: item[0]):
+        sorted_paths = sorted(class_paths)
+        if len(sorted_paths) == 1 and base_name not in used:
+            mapping[sorted_paths[0]] = base_name
+            used.add(base_name)
+            continue
+
+        for class_path in sorted_paths:
+            pkg_parts = [sanitize_name(p) for p in class_path.split('/')[:-1] if p]
+            chosen = None
+            for depth in range(1, len(pkg_parts) + 1):
+                suffix = '_'.join(pkg_parts[-depth:])
+                candidate = f"{base_name}_{suffix}"
+                if candidate not in used:
+                    chosen = candidate
+                    break
+
+            if chosen is None:
+                idx = 2
+                candidate = f"{base_name}_2"
+                while candidate in used:
+                    idx += 1
+                    candidate = f"{base_name}_{idx}"
+                chosen = candidate
+
+            mapping[class_path] = chosen
+            used.add(chosen)
+
+    return mapping
+
+def java_class_to_ts(class_path: str, type_names: Optional[dict[str, str]] = None) -> str:
     """Convert a JVM class path to a TypeScript type name."""
     if class_path in KNOWN_TYPES:
         return KNOWN_TYPES[class_path]
-    # Strip common package prefixes and use simple name
+    if type_names and class_path in type_names:
+        return type_names[class_path]
     parts = class_path.split('/')
-    return parts[-1].replace('$', '_')  # Inner classes: Foo$Bar → Foo_Bar
+    return sanitize_name(parts[-1].replace('$', '_'))
 
-def parse_descriptor(desc: str) -> tuple[list[str], str]:
+def parse_descriptor(desc: str, type_names: Optional[dict[str, str]] = None) -> tuple[list[str], str]:
     """Parse a JVM method descriptor into (param_types, return_type)."""
     if '(' not in desc:
-        return [], desc_to_ts(desc)
+        return [], desc_to_ts(desc, type_names)
     params_raw, ret_raw = desc[1:].split(')', 1)
-    params = list(parse_type_sequence(params_raw))
-    ret = desc_to_ts(ret_raw)
+    params = list(parse_type_sequence(params_raw, type_names))
+    ret = desc_to_ts(ret_raw, type_names)
     return params, ret
 
-def parse_type_sequence(s: str) -> Iterator[str]:
+def parse_type_sequence(s: str, type_names: Optional[dict[str, str]] = None) -> Iterator[str]:
     """Parse a sequence of JVM type descriptors."""
     i = 0
     while i < len(s):
@@ -279,7 +321,7 @@ def parse_type_sequence(s: str) -> Iterator[str]:
         elif c == 'L':
             end = s.index(';', i)
             class_path = s[i+1:end]
-            yield java_class_to_ts(class_path)
+            yield java_class_to_ts(class_path, type_names)
             i = end + 1
         elif c == '[':
             # Array: find the element type
@@ -291,7 +333,7 @@ def parse_type_sequence(s: str) -> Iterator[str]:
             if elem_desc == 'L':
                 end = s.index(';', j)
                 class_path = s[j+1:end]
-                elem_ts = java_class_to_ts(class_path)
+                elem_ts = java_class_to_ts(class_path, type_names)
                 i = end + 1
             else:
                 elem_ts = PRIMITIVE_MAP.get(elem_desc, 'any')
@@ -305,7 +347,7 @@ def parse_type_sequence(s: str) -> Iterator[str]:
             yield 'any'
             i += 1
 
-def desc_to_ts(desc: str) -> str:
+def desc_to_ts(desc: str, type_names: Optional[dict[str, str]] = None) -> str:
     """Convert a single JVM type descriptor to TypeScript."""
     if not desc:
         return 'any'
@@ -314,27 +356,27 @@ def desc_to_ts(desc: str) -> str:
         return PRIMITIVE_MAP[c]
     if c == 'L':
         class_path = desc[1:].rstrip(';')
-        return java_class_to_ts(class_path)
+        return java_class_to_ts(class_path, type_names)
     if c == '[':
-        inner = desc_to_ts(desc[1:])
+        inner = desc_to_ts(desc[1:], type_names)
         return f"{inner}[]"
     return 'any'
 
-def signature_to_ts(sig: str) -> str:
+def signature_to_ts(sig: str, type_names: Optional[dict[str, str]] = None) -> str:
     """
     Convert a JVM generic signature to TypeScript generics.
     Handles common cases like Ljava/util/List<Ljava/lang/String;>;
     """
     try:
-        return _parse_sig(sig)
+        return _parse_sig(sig, type_names)
     except Exception:
         return 'any'
 
-def _parse_sig(sig: str) -> str:
-    result, pos = _parse_type_sig(sig, 0)
+def _parse_sig(sig: str, type_names: Optional[dict[str, str]] = None) -> str:
+    result, pos = _parse_type_sig(sig, 0, type_names)
     return result
 
-def _parse_type_sig(sig: str, pos: int) -> tuple[str, int]:
+def _parse_type_sig(sig: str, pos: int, type_names: Optional[dict[str, str]] = None) -> tuple[str, int]:
     if pos >= len(sig):
         return 'any', pos
     c = sig[pos]
@@ -347,7 +389,7 @@ def _parse_type_sig(sig: str, pos: int) -> tuple[str, int]:
         while class_end < len(sig) and sig[class_end] not in '<;':
             class_end += 1
         class_path = sig[i:class_end]
-        ts_name = java_class_to_ts(class_path)
+        ts_name = java_class_to_ts(class_path, type_names)
         if class_end < len(sig) and sig[class_end] == '<':
             # Generic args
             type_args = []
@@ -358,10 +400,10 @@ def _parse_type_sig(sig: str, pos: int) -> tuple[str, int]:
                     p += 1
                 elif sig[p] in '+-':  # bounded wildcard
                     p += 1
-                    arg, p = _parse_type_sig(sig, p)
+                    arg, p = _parse_type_sig(sig, p, type_names)
                     type_args.append(arg)
                 else:
-                    arg, p = _parse_type_sig(sig, p)
+                    arg, p = _parse_type_sig(sig, p, type_names)
                     type_args.append(arg)
             ts_name = f"{ts_name}<{', '.join(type_args)}>"
             p += 1  # skip '>'
@@ -374,14 +416,14 @@ def _parse_type_sig(sig: str, pos: int) -> tuple[str, int]:
             p = class_end + 1
             return ts_name, p
     if c == '[':
-        inner, p = _parse_type_sig(sig, pos + 1)
+        inner, p = _parse_type_sig(sig, pos + 1, type_names)
         return f"{inner}[]", p
     if c == 'T':
         # Type variable
         end = sig.index(';', pos + 1)
         return sig[pos+1:end], end + 1
     if c in '+-':
-        return _parse_type_sig(sig, pos + 1)
+        return _parse_type_sig(sig, pos + 1, type_names)
     if c == '*':
         return 'any', pos + 1
     return 'any', pos + 1
@@ -435,6 +477,9 @@ def sanitize_name(name: str) -> str:
 
     return sanitized
 
+def fqcn_from_class_path(class_path: str) -> str:
+    return class_path.replace('/', '.')
+
 def extract_class_generics(sig: str) -> str:
     """Extract the class-level generic params from a class signature, e.g. <T:Ljava/lang/Object;>"""
     if not sig or not sig.startswith('<'):
@@ -469,7 +514,7 @@ def extract_class_generics(sig: str) -> str:
                 return f"<{', '.join(params)}>" if params else ''
     return ''
 
-def method_to_ts(method: JavaMethod, opts) -> Optional[str]:
+def method_to_ts(method: JavaMethod, opts, type_names: Optional[dict[str, str]] = None) -> Optional[str]:
     name = method.name
     access = method.access
 
@@ -484,11 +529,11 @@ def method_to_ts(method: JavaMethod, opts) -> Optional[str]:
         # Constructor
         try:
             if sig:
-                params, _ = parse_method_sig_with_generics(sig)
+                params, _ = parse_method_sig_with_generics(sig, type_names)
             else:
-                params, _ = parse_descriptor(method.descriptor)
+                params, _ = parse_descriptor(method.descriptor, type_names)
         except Exception:
-            params, _ = parse_descriptor(method.descriptor)
+            params, _ = parse_descriptor(method.descriptor, type_names)
         param_strs = [f"arg{i}: {t}" for i, t in enumerate(params)]
         return f"  constructor({', '.join(param_strs)});"
 
@@ -497,18 +542,18 @@ def method_to_ts(method: JavaMethod, opts) -> Optional[str]:
 
     try:
         if sig:
-            params, ret = parse_method_sig_with_generics(sig)
+            params, ret = parse_method_sig_with_generics(sig, type_names)
         else:
-            params, ret = parse_descriptor(method.descriptor)
+            params, ret = parse_descriptor(method.descriptor, type_names)
     except Exception:
-        params, ret = parse_descriptor(method.descriptor)
+        params, ret = parse_descriptor(method.descriptor, type_names)
 
     param_strs = [f"arg{i}: {t}" for i, t in enumerate(params)]
     static_kw = 'static ' if is_static(access) else ''
     safe_name = sanitize_name(name)
     return f"  {static_kw}{safe_name}({', '.join(param_strs)}): {ret};"
 
-def parse_method_sig_with_generics(sig: str) -> tuple[list[str], str]:
+def parse_method_sig_with_generics(sig: str, type_names: Optional[dict[str, str]] = None) -> tuple[list[str], str]:
     """Parse a JVM generic method signature."""
     pos = 0
     # Optional type params e.g. <T:Ljava/lang/Object;>
@@ -528,30 +573,49 @@ def parse_method_sig_with_generics(sig: str) -> tuple[list[str], str]:
     pos += 1  # skip '('
     params = []
     while pos < len(sig) and sig[pos] != ')':
-        t, pos = _parse_type_sig(sig, pos)
+        t, pos = _parse_type_sig(sig, pos, type_names)
         params.append(t)
     pos += 1  # skip ')'
-    ret, _ = _parse_type_sig(sig, pos)
+    ret, _ = _parse_type_sig(sig, pos, type_names)
     return params, ret
 
-def field_to_ts(f: JavaField, opts) -> Optional[str]:
+def field_to_ts(f: JavaField, opts, type_names: Optional[dict[str, str]] = None) -> Optional[str]:
     access = f.access
     if opts.public_only and not (is_public(access) or is_protected(access)):
         return None
     sig = f.signature if (f.signature and not opts.no_generics) else None
     try:
-        ts_type = signature_to_ts(sig) if sig else desc_to_ts(f.descriptor)
+        ts_type = signature_to_ts(sig, type_names) if sig else desc_to_ts(f.descriptor, type_names)
     except Exception:
-        ts_type = desc_to_ts(f.descriptor)
+        ts_type = desc_to_ts(f.descriptor, type_names)
     static_kw = 'static ' if is_static(access) else ''
     readonly_kw = 'readonly ' if (access & ACC_FINAL) else ''
     safe_name = sanitize_name(f.name)
     return f"  {static_kw}{readonly_kw}{safe_name}: {ts_type};"
 
-def class_to_dts(jc: JavaClass, opts, all_classes: set[str]) -> str:
+def constructor_to_static_new_signature(method: JavaMethod, opts, class_name: str, type_names: Optional[dict[str, str]] = None) -> Optional[str]:
+    """Convert a JVM constructor to a static-side TypeScript `new (...)` signature."""
+    access = method.access
+    if opts.public_only and not (is_public(access) or is_protected(access)):
+        return None
+
+    sig = method.signature if (method.signature and not opts.no_generics) else None
+    try:
+        if sig:
+            params, _ = parse_method_sig_with_generics(sig, type_names)
+        else:
+            params, _ = parse_descriptor(method.descriptor, type_names)
+    except Exception:
+        params, _ = parse_descriptor(method.descriptor, type_names)
+
+    param_strs = [f"arg{i}: {t}" for i, t in enumerate(params)]
+    return f"  new({', '.join(param_strs)}): {class_name};"
+
+def class_to_dts(jc: JavaClass, opts, all_classes: set[str], type_names: dict[str, str]) -> str:
     lines = []
-    name = sanitize_name(jc.class_name.split('/')[-1].replace('$', '_'))
+    name = type_names.get(jc.class_name, sanitize_name(jc.class_name.split('/')[-1].replace('$', '_')))
     access = jc.access
+    runtime_class_name = fqcn_from_class_path(jc.class_name)
 
     # Determine kind
     if is_enum(access):
@@ -572,29 +636,120 @@ def class_to_dts(jc: JavaClass, opts, all_classes: set[str]) -> str:
 
     if kind != 'enum':
         if jc.super_name and jc.super_name not in ('java/lang/Object', 'java/lang/Enum'):
-            super_ts = java_class_to_ts(jc.super_name)
+            super_ts = java_class_to_ts(jc.super_name, type_names)
             extends_clause = f" extends {super_ts}"
 
-        ifaces = [java_class_to_ts(i) for i in jc.interfaces
+        ifaces = [java_class_to_ts(i, type_names) for i in jc.interfaces
                   if i not in ('java/io/Serializable', 'java/lang/Comparable', 'java/lang/Cloneable')]
         if ifaces:
             kw = 'extends' if kind == 'interface' else 'implements'
             implements_clause = f" {kw} {', '.join(ifaces)}"
 
     if kind == 'enum':
-        # Emit as enum
         enum_values = []
         for f in jc.fields:
             if is_static(f.access) and is_public(f.access):
-                # Enum are static fields of the enum type
                 if f.descriptor == f'L{jc.class_name};':
-                    enum_values.append(f"  {sanitize_name(f.name)}")
-        if enum_values:
-            lines.append(f"export enum {name} {{")
-            lines.extend([v + ',' for v in enum_values])
-            lines.append("}")
-        else:
-            lines.append(f"export type {name} = string;")
+                    enum_values.append(sanitize_name(f.name))
+
+        if not opts.emit_runtime_value:
+            if enum_values:
+                lines.append(f"export enum {name} {{")
+                lines.extend([f"  {v}," for v in enum_values])
+                lines.append("}")
+            else:
+                lines.append(f"export type {name} = string;")
+            return '\n'.join(lines)
+
+        # Runtime-backed enum: instance type + static surface + Java.type binding
+        iface_extends = [java_class_to_ts(i, type_names) for i in jc.interfaces
+                         if i not in ('java/io/Serializable', 'java/lang/Comparable', 'java/lang/Cloneable')]
+        iface_clause = f" extends {', '.join(iface_extends)}" if iface_extends else ''
+
+        lines.append(f"export interface {name}{iface_clause} {{")
+        for m in jc.methods:
+            if is_static(m.access) or m.name in ('<init>', '<clinit>'):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts:
+                lines.append(ts.replace('  static ', '  '))
+        lines.append("}")
+        lines.append("")
+
+        lines.append(f"export interface {name}_Static {{")
+        for ev in enum_values:
+            lines.append(f"  readonly {ev}: {name};")
+
+        seen_static = set()
+        for m in jc.methods:
+            if not is_static(m.access) or m.name in ('<init>', '<clinit>'):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_static:
+                lines.append(ts.replace('  static ', '  '))
+                seen_static.add(ts)
+        lines.append("}")
+        lines.append(f"export const {name}: {name}_Static = Java.type<{name}_Static>('{runtime_class_name}');")
+        return '\n'.join(lines)
+
+    if opts.emit_runtime_value and kind == 'class':
+        parents: list[str] = []
+        if jc.super_name and jc.super_name not in ('java/lang/Object',):
+            parents.append(java_class_to_ts(jc.super_name, type_names))
+        parents.extend([java_class_to_ts(i, type_names) for i in jc.interfaces
+                        if i not in ('java/io/Serializable', 'java/lang/Comparable', 'java/lang/Cloneable')])
+        extends_clause = f" extends {', '.join(parents)}" if parents else ''
+
+        lines.append(f"export interface {name}{generics}{extends_clause} {{")
+
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID') or is_static(f.access):
+                continue
+            ts = field_to_ts(f, opts, type_names)
+            if ts:
+                lines.append(ts.replace('  static ', '  '))
+
+        seen_instance = set()
+        for m in jc.methods:
+            if m.name in ('<init>', '<clinit>') or is_static(m.access):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_instance:
+                lines.append(ts.replace('  static ', '  '))
+                seen_instance.add(ts)
+
+        lines.append("}")
+        lines.append("")
+
+        lines.append(f"export interface {name}_Static {{")
+
+        seen_ctor = set()
+        for m in jc.methods:
+            if m.name != '<init>':
+                continue
+            ctor_sig = constructor_to_static_new_signature(m, opts, name, type_names)
+            if ctor_sig and ctor_sig not in seen_ctor:
+                lines.append(ctor_sig)
+                seen_ctor.add(ctor_sig)
+
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID') or not is_static(f.access):
+                continue
+            ts = field_to_ts(f, opts, type_names)
+            if ts:
+                lines.append(ts.replace('  static ', '  '))
+
+        seen_static_methods = set()
+        for m in jc.methods:
+            if m.name in ('<init>', '<clinit>') or not is_static(m.access):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_static_methods:
+                lines.append(ts.replace('  static ', '  '))
+                seen_static_methods.add(ts)
+
+        lines.append("}")
+        lines.append(f"export const {name}: {name}_Static = Java.type<{name}_Static>('{runtime_class_name}');")
         return '\n'.join(lines)
 
     # Abstract class modifier
@@ -608,19 +763,23 @@ def class_to_dts(jc: JavaClass, opts, all_classes: set[str]) -> str:
         # Skip enum-internal fields
         if f.name in ('$VALUES', 'serialVersionUID'):
             continue
-        ts = field_to_ts(f, opts)
+        ts = field_to_ts(f, opts, type_names)
         if ts:
             lines.append(ts)
 
     # Methods
     seen_sigs = set()
     for m in jc.methods:
-        ts = method_to_ts(m, opts)
+        ts = method_to_ts(m, opts, type_names)
         if ts and ts not in seen_sigs:
             lines.append(ts)
             seen_sigs.add(ts)
 
     lines.append("}")
+
+    if opts.emit_runtime_value and kind == 'interface':
+        lines.append(f"export const {name} = Java.type<{name}>('{runtime_class_name}');")
+
     return '\n'.join(lines)
 
 
@@ -636,6 +795,8 @@ def parse_args():
     p.add_argument('--include-protected', dest='public_only', action='store_false')
     p.add_argument('--no-generics', dest='no_generics', action='store_true', default=False)
     p.add_argument('--prefix', default='', help='Wrap everything in a namespace')
+    p.add_argument('--emit-runtime-value', dest='emit_runtime_value', action='store_true', default=False,
+                   help='Emit runtime Java.type(...) value bindings alongside generated types')
     return p.parse_args()
 
 def main():
@@ -657,13 +818,15 @@ def main():
         pkg_filter = opts.package.replace('.', '/')
 
         for name in names:
-            # Skip inner anonymous classes like Foo$1.class
+            # Skip synthetic/anonymous helper classes like Foo$1.class
             base = name[:-6]  # strip .class
             simple = base.split('/')[-1]
             if simple in ('package-info', 'module-info'):
                 continue
             if re.match(r'^\d+$', simple):
                 continue  # anonymous class
+            if re.match(r'^.+\$\d+$', simple):
+                continue  # inner anonymous class (e.g. Foo$1)
 
             if pkg_filter and not base.startswith(pkg_filter):
                 continue
@@ -684,6 +847,7 @@ def main():
             print(f"  Warning: {e}", file=sys.stderr)
 
     all_class_names = {jc.class_name for jc in classes}
+    type_names = build_type_name_map(classes)
 
     # Organize by package
     by_package: dict[str, list[JavaClass]] = {}
@@ -707,7 +871,7 @@ def main():
                 if pkg:
                     f.write(f"  // Package: {pkg.replace('/', '.')}\n")
                 for jc in pkg_classes:
-                    dts = class_to_dts(jc, opts, all_class_names)
+                    dts = class_to_dts(jc, opts, all_class_names, type_names)
                     if opts.prefix:
                         # Indent
                         indented = '\n'.join('  ' + l for l in dts.split('\n'))
@@ -728,7 +892,7 @@ def main():
                 if opts.prefix:
                     f.write(f"declare namespace {opts.prefix} {{\n\n")
                 for jc in sorted(pkg_classes, key=lambda c: c.class_name):
-                    dts = class_to_dts(jc, opts, all_class_names)
+                    dts = class_to_dts(jc, opts, all_class_names, type_names)
                     if opts.prefix:
                         indented = '\n'.join('  ' + l for l in dts.split('\n'))
                         f.write(indented + '\n\n')

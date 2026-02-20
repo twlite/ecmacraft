@@ -1,0 +1,45 @@
+---
+title: Build and Deploy
+description: Build production artifacts and deploy to your server
+---
+
+Use this flow when you are ready to publish your plugin outside local watch mode.
+
+## Build
+
+Run the production build:
+
+```bash
+ecmacraft build
+```
+
+Generated outputs:
+
+- `dist/main.js` (minified plugin bundle)
+- `dist/ecmacraft.jar` (host jar with embedded bundle)
+
+`dist/ecmacraft.jar` is the artifact you deploy.
+
+## Deploy
+
+Copy the output jar to your Paper/Spigot server `plugins/` folder:
+
+```bash
+cp dist/ecmacraft.jar /path/to/server/plugins/ecmacraft.jar
+```
+
+Restart the server (or reload as needed) to run the updated plugin.
+
+If you are replacing an existing jar, keep the filename stable (`ecmacraft.jar`) to simplify deployment automation.
+
+## Recommended Release Checklist
+
+- run `pnpm build` in your plugin project,
+- verify plugin startup on a clean test server,
+- confirm key commands/events behave as expected,
+- deploy `dist/ecmacraft.jar` to production.
+
+## Dev vs Production
+
+- `ecmacraft dev`: optimized for iteration, watch mode, live reload.
+- `ecmacraft build`: optimized for distribution, minification, packaged artifact.

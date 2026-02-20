@@ -1,0 +1,49 @@
+---
+title: Plugin Basics
+description: Write handlers with decorators and register them in your entrypoint
+---
+
+EcmaCraft plugins are regular TypeScript modules with a default export function.
+
+At runtime, EcmaCraft loads your compiled module and calls the default export with a `PluginContext`.
+
+## Minimal Plugin
+
+```ts
+import { type PluginContext, Event, type SpigotEventType } from 'ecmacraft';
+
+class Welcomer {
+  @Event('PlayerJoinEvent')
+  onPlayerJoin(event: SpigotEventType<'PlayerJoinEvent'>) {
+    const player = event.getPlayer();
+    player.sendMessage('Welcome to the server!');
+  }
+}
+
+export default function main(ctx: PluginContext) {
+  ctx.registerHandlers(new Welcomer());
+}
+```
+
+## How Handler Registration Works
+
+1. Decorators like `@Event(...)` attach metadata.
+2. `ctx.registerHandlers(...)` scans methods on your handler instance.
+3. Matching Java-side listeners/command bindings are wired at runtime.
+
+If a method is not decorated, it is ignored during registration.
+
+## Project Shape
+
+For a standard plugin project:
+
+- `src/main.ts` is your entrypoint,
+- `export default function main(ctx)` is required,
+- `ctx.registerHandlers(...)` connects your decorated classes.
+
+## Best Practices
+
+- Keep event handlers small and focused.
+- Split large features into multiple handler classes.
+- Use TypeScript types (`SpigotEventType<...>`) for safer API usage.
+- Put gameplay constants/config in separate modules, not inside handler methods.

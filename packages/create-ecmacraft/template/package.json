@@ -1,0 +1,23 @@
+{
+    "name": "ecmacraft-template",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Dev minecraft plugin with TypeScript",
+    "type": "module",
+    "scripts": {
+        "build": "ecmacraft build",
+        "dev": "ecmacraft dev"
+    },
+    "license": "MIT",
+    "author": "Twilight <hello@twlite.dev>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/twlite/ecmacraft"
+    },
+    "devDependencies": {
+        "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "ecmacraft": "*"
+    }
+}

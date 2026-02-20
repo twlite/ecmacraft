@@ -1,7 +1,7 @@
 import type { SpigotEvents } from './events.js';
 
-export const EventHandlers: Record<string, Record<string, string>> = {};
-(globalThis as Record<string, unknown>).EventHandlers = EventHandlers;
+const EventHandlers: Record<string, Record<string, string>> = {};
+(globalThis as Record<string, unknown>).__ecmacraft_internal_state_store_$EventHandlers = EventHandlers;
 
 export function Event<E extends SpigotEvents>(eventName: E) {
   return function (target: any, propertyKey: string) {
@@ -11,8 +11,8 @@ export function Event<E extends SpigotEvents>(eventName: E) {
   };
 }
 
-export const CommandHandlers: Record<string, Record<string, string>> = {};
-(globalThis as Record<string, unknown>).CommandHandlers = CommandHandlers;
+const CommandHandlers: Record<string, Record<string, string>> = {};
+(globalThis as Record<string, unknown>).__ecmacraft_internal_state_store_$CommandHandlers = CommandHandlers;
 
 export function Command(commandName: string) {
   return function (target: any, propertyKey: string) {

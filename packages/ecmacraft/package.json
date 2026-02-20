@@ -6,6 +6,28 @@
     "types": "dist/index.d.ts",
     "bin": "./bin/index.js",
     "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./cli": {
+            "import": "./dist/cli/index.js",
+            "types": "./dist/cli/index.d.ts"
+        },
+        "./config": {
+            "import": "./dist/config/define-config.js",
+            "types": "./dist/config/define-config.d.ts"
+        },
+        "./spigot": {
+            "import": "./dist/spigot.js",
+            "types": "./dist/spigot.d.ts"
+        }
+    },
+    "files": [
+        "dist",
+        "bin"
+    ],
     "scripts": {
         "build": "tsc",
         "prepublishOnly": "pnpm build"
@@ -19,5 +41,12 @@
     "devDependencies": {
         "@ecmacraft/tsconfig": "workspace:*",
         "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "@ecmacraft/types": "workspace:*",
+        "chokidar": "^5.0.0",
+        "commander": "^14.0.3",
+        "esbuild": "^0.27.3",
+        "jszip": "^3.10.1"
     }
 }

@@ -1,0 +1,148 @@
+---
+title: CLI Reference
+description: Complete command reference for ecmacraft and create-ecmacraft
+---
+
+EcmaCraft ships two CLIs:
+
+- `ecmacraft` for building/running plugin projects,
+- `create-ecmacraft` for scaffolding new projects.
+
+## `ecmacraft` Commands
+
+### `ecmacraft dev`
+
+Starts the development environment.
+
+```bash
+ecmacraft dev [--cwd <dir>]
+```
+
+Behavior:
+
+- loads `ecmacraft.config.*` if present,
+- bundles your entry file in non-minified mode,
+- creates/updates `.ecmacraft/development/server.properties` from `development.serverProperties`,
+- starts a Paper server process,
+- watches `src/` for changes (`.ts`, `.tsx`, `.js`, `.jsx`),
+- sends reload commands based on `development.reloadType`.
+
+### Interactive Paper Console (stdin passthrough)
+
+When `ecmacraft dev` is running, your terminal is also the Paper console.
+
+Anything you type is forwarded to PaperMC stdin directly, so you can run server commands
+without opening a second terminal.
+
+Common examples:
+
+```text
+say hello from ecmacraft dev
+list
+help
+time set day
+gamerule keepInventory true
+ecmacraft-reload
+```
+
+Important notes:
+
+- command output appears prefixed with `[paper]`,
+- your own EcmaCraft process logs appear with `[ecmacraft]`,
+- stdin forwarding stays active for the whole dev session,
+- pressing `Ctrl+C` gracefully stops watcher + server.
+
+### Auto reload behavior after rebuild
+
+After each successful source rebuild, EcmaCraft optionally runs a server command:
+
+- `reloadType: 'soft'` → runs `ecmacraft-reload` (recommended),
+- `reloadType: 'hard'` → runs `reload confirm`,
+- `reloadType: 'none'` → does not run any reload command.
+
+This means you can choose between automatic reloads or fully manual console control.
+
+### Session lifecycle
+
+During startup, `ecmacraft dev`:
+
+1. writes/update local dev server files under `.ecmacraft/development`,
+2. does an initial bundle,
+3. launches Paper,
+4. starts file watching,
+5. begins stdin forwarding.
+
+If Paper exits unexpectedly, EcmaCraft attempts automatic restarts (up to 2 times,
+except for detected fatal JVM crash situations).
+
+Useful examples:
+
+```bash
+# run from another directory
+ecmacraft dev --cwd ./examples/my-plugin
+
+# standard project run
+pnpm dev
+
+# send commands manually while running
+# (type directly in the same terminal)
+# list
+# say dev server is live
+```
+
+### `ecmacraft build`
+
+Builds a production artifact.
+
+```bash
+ecmacraft build [--cwd <dir>]
+```
+
+Behavior:
+
+- bundles your entry file in minified mode,
+- downloads the EcmaCraft host jar,
+- writes `dist/main.js`,
+- creates `dist/ecmacraft.jar` with embedded plugin JavaScript.
+
+Useful examples:
+
+```bash
+# build current project
+ecmacraft build
+
+# build from another path
+ecmacraft build --cwd ./examples/my-plugin
+```
+
+## `create-ecmacraft` Commands
+
+### Basic Usage
+
+```bash
+create-ecmacraft [project-name] [options]
+```
+
+### Options
+
+- `-n, --name <name>`: project/package name
+- `-d, --dir <dir>`: target directory
+- `--description <text>`: package description
+- `--pm, --package-manager <pm>`: `pnpm | npm | yarn | bun`
+- `--install`: install dependencies
+- `--no-install`: skip dependency installation
+- `--overwrite`: allow writing into a non-empty directory
+- `-y, --yes`: skip prompts and accept defaults
+- `-h, --help`: show help text
+
+### Example
+
+```bash
+pnpm create ecmacraft my-plugin --pm pnpm --install
+```
+
+### Typical non-interactive setup
+
+```bash
+create-ecmacraft my-plugin --pm pnpm --yes --install
+```

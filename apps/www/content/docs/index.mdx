@@ -1,13 +1,49 @@
 ---
-title: Hello World
-description: Your first document
+title: Introduction
+description: Build Minecraft plugins with TypeScript using EcmaCraft
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+EcmaCraft is a TypeScript-first toolchain for creating Paper/Spigot plugins.
 
-## What is Next?
+It combines:
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+- a Java host plugin runtime,
+- generated Spigot types for editor support,
+- a CLI for local development and production builds.
+
+## Documentation
+
+- [Getting Started](./getting-started.mdx)
+- [CLI Reference](./cli.mdx)
+- [Configuration](./configuration.mdx)
+- [Plugin Basics](./plugin-basics.mdx)
+- [Build and Deploy](./build-and-deploy.mdx)
+
+### Suggested Reading Order
+
+1. Start with [Getting Started](./getting-started.mdx)
+2. Read [CLI Reference](./cli.mdx)
+3. Configure local server behavior in [Configuration](./configuration.mdx)
+
+The configuration guide includes `development.serverProperties`, which lets you control seed,
+online/offline mode, ports, and other `server.properties` values from TypeScript config.
+
+## Quick Example
+
+```ts
+import { type PluginContext, Event, type SpigotEventType } from 'ecmacraft';
+
+class LightningStriker {
+  @Event('PlayerToggleSneakEvent')
+  onSneak(event: SpigotEventType<'PlayerToggleSneakEvent'>) {
+    if (!event.isSneaking()) return;
+
+    const player = event.getPlayer();
+    player.getWorld().strikeLightning(player.getLocation());
+  }
+}
+
+export default function main(ctx: PluginContext) {
+  ctx.registerHandlers(new LightningStriker());
+}
+```

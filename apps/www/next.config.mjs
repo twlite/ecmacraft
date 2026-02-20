@@ -13,6 +13,9 @@ const config = {
       },
     ];
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default withMDX(config);

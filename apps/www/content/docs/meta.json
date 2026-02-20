@@ -1,0 +1,11 @@
+{
+    "title": "EcmaCraft Docs",
+    "pages": [
+        "index",
+        "getting-started",
+        "cli",
+        "configuration",
+        "plugin-basics",
+        "build-and-deploy"
+    ]
+}

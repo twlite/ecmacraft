@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 const input = join(import.meta.dirname, '..', 'packages', 'types', 'src');
 
-const EVENT_CLASS_REGEX = /export declare class (\w+Event)\b/g;
+const EVENT_CLASS_REGEX = /export const (\w+Event)\b/g;
 
 const source = await readFile(join(input, 'jar_types.ts'), 'utf-8');
 
