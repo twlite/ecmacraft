@@ -22,7 +22,7 @@ Traditional plugin development is Java-first. EcmaCraft provides a TypeScript-fi
 This simple plugin strikes lightning at the player's location whenever they start sneaking:
 
 ```ts
-import { PluginContext, Event, SpigotEventType } from '@ecmacraft/types';
+import { PluginContext, Event, SpigotEventType } from 'ecmacraft';
 
 class LightningStriker {
   @Event('PlayerToggleSneakEvent')
