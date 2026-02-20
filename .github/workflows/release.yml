@@ -27,6 +27,8 @@ jobs:
         package:
           - name: ecmacraft
             path: packages/ecmacraft
+          - name: create-ecmacraft
+            path: packages/create-ecmacraft
           - name: '@ecmacraft/types'
             path: packages/types
     steps:
