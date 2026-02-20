@@ -7,7 +7,7 @@
     "build:plugin": "cd ./ecmacraft && mvn clean package -DskipTests",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"{apps,packages,scripts}/**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "generate-dts": "python ./scripts/jar2dts.py ./target/spigot-api.jar --out ./packages/types/src --single --emit-runtime-value && node ./scripts/extract-events.ts",
     "test-server": "cd test-server && node ../scripts/pre-server.ts && java -Xmx2048M -Xms2048M -jar server.jar nogui"
