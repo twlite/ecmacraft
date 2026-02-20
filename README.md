@@ -1,8 +1,5 @@
 # EcmaCraft
 
-> [!IMPORTANT]
-> This project is a prototype and is not production ready yet
-
 EcmaCraft is a polyglot Minecraft plugin platform that lets you author Spigot plugin logic in TypeScript, while running through a Java host plugin powered by GraalVM JavaScript.
 
 The repository is a monorepo that contains:
