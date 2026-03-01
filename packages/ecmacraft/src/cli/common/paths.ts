@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 
 export const DEV_ROOT_RELATIVE_PATH = '.ecmacraft/development';
+export const BIN_RELATIVE_PATH = '.ecmacraft/bin';
 export const BUNDLED_JS_FILENAME = 'main.js';
 export const EMBEDDED_JS_PATH = 'assets/ecmacraft/main.js';
 
@@ -13,6 +14,10 @@ export interface DevelopmentPaths {
   ecmacraftJarPath: string;
   ecmacraftDataDir: string;
   bundledJsPath: string;
+}
+
+export function createBinDir(cwd: string): string {
+  return join(cwd, BIN_RELATIVE_PATH);
 }
 
 export function createDevelopmentPaths(cwd: string): DevelopmentPaths {

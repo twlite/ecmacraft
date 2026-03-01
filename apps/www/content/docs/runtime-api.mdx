@@ -1,0 +1,219 @@
+---
+title: Runtime API
+description: Chalk styles, lifecycle cleanup, handler registration, commands, and scheduler semantics
+---
+
+This page documents the runtime-facing API available inside your plugin `main` module.
+
+## Entry Point And Cleanup
+
+Your plugin must export a default function:
+
+```ts
+import type { PluginContext } from 'ecmacraft';
+
+export default function main(ctx: PluginContext) {
+  // setup
+
+  return () => {
+    // optional cleanup
+  };
+}
+```
+
+Behavior:
+
+- `main(ctx)` is called when EcmaCraft loads your module.
+- If `main` returns a function, EcmaCraft stores it as an unload callback.
+- The unload callback is invoked before the JS context is closed.
+- The unload callback runs on server disable and `ecmacraft-reload`.
+- Exceptions in cleanup are logged and runtime unload continues.
+
+Use cleanup to clear timers, close resources, and stop loops you created.
+
+## `PluginContext`
+
+`PluginContext` exposes:
+
+- `ctx.getPlugin()` to access the underlying `JavaPlugin`.
+- `ctx.registerHandlers(...instances)` to register decorated handler classes.
+
+Example:
+
+```ts
+import { Command, Event, type PluginContext, type SpigotEventType } from 'ecmacraft';
+import { CommandSender } from 'ecmacraft/spigot';
+
+class GameHandlers {
+  @Event('PlayerJoinEvent')
+  onJoin(event: SpigotEventType<'PlayerJoinEvent'>) {
+    event.getPlayer().sendMessage('Welcome!');
+  }
+
+  @Command('ping')
+  ping(sender: CommandSender) {
+    sender.sendMessage('pong');
+    return true;
+  }
+}
+
+export default function main(ctx: PluginContext) {
+  ctx.registerHandlers(new GameHandlers());
+}
+```
+
+## Chalk API
+
+EcmaCraft exports `chalk`, a Minecraft color-code formatter inspired by npm `chalk`.
+
+```ts
+import { chalk } from 'ecmacraft';
+
+player.sendMessage(chalk.red('Danger!'));
+player.sendMessage(chalk.green.bold('Ready'));
+player.sendMessage(chalk.yellow`Coins: ${count}`);
+```
+
+Supported styles:
+
+- Colors: `black`, `darkBlue`, `darkGreen`, `darkAqua`, `darkRed`, `darkPurple`, `gold`, `gray`, `darkGray`, `blue`, `green`, `aqua`, `red`, `lightPurple`, `yellow`, `white`
+- Formats: `obfuscated`, `bold`, `strikethrough`, `underline`, `italic`, `reset`
+
+Call forms:
+
+- Function call: `chalk.red('text')`
+- Tagged template: `` chalk.red`text ${value}` ``
+- Chaining: `chalk.red.bold('text')`
+
+Behavior notes:
+
+- The resulting string always ends with `§r` to reset formatting.
+- Template placeholders are converted with `String(value)`.
+
+## Event And Command Registration
+
+Decorators only write metadata. Actual wiring happens when you call:
+
+```ts
+ctx.registerHandlers(instanceA, instanceB);
+```
+
+### Events
+
+- Methods decorated with `@Event('SomeEventName')` are discovered by class name and method name.
+- Event classes are resolved against Bukkit event packages.
+- Handlers are registered with `EventPriority.NORMAL`.
+- `ignoreCancelled` is `false`.
+- Runtime exceptions in handlers are caught and logged.
+
+### Commands
+
+- Methods decorated with `@Command('name')` become runtime Bukkit commands.
+- Command names are normalized: leading `/` is removed, whitespace-only names or names containing spaces are rejected, and values are lowercased.
+- If a command already exists from another plugin/owner, registration is skipped with a warning.
+- A same-name command previously registered by this runtime can be replaced.
+
+Command method signature at runtime:
+
+```ts
+@Command('example')
+example(sender, args, label) {
+  return true;
+}
+```
+
+- `sender`: Bukkit `CommandSender`
+- `args`: command arguments array
+- `label`: command label used
+
+Return behavior:
+
+- If you return a boolean, Bukkit uses it.
+- Any other return type defaults to `true`.
+
+Tab completion:
+
+- Preferred: decorate a method with `@Autocomplete('example')`.
+- Runtime signature: `(sender, args, alias)`.
+- Return value can be JS array, Java iterable, or string.
+- Non-supported returns become an empty completion list.
+
+Example:
+
+```ts
+import { Autocomplete, Command } from 'ecmacraft';
+import { CommandSender } from 'ecmacraft/spigot';
+
+class CommandHandlers {
+  @Command('example')
+  example(sender: CommandSender) {
+    sender.sendMessage('ok');
+    return true;
+  }
+
+  @Autocomplete('example')
+  exampleAutocomplete(sender: CommandSender, args: string[]) {
+    const options = ['alpha', 'beta', 'gamma'];
+    const lastArg = (args[args.length - 1] ?? '').toLowerCase();
+    return options.filter((option) => option.startsWith(lastArg));
+  }
+}
+```
+
+## Scheduler API
+
+EcmaCraft installs browser/Node-like timer globals in your plugin context:
+
+- `setTimeout(callback, delayMs?, ...args)`
+- `clearTimeout(id)`
+- `setInterval(callback, intervalMs?, ...args)`
+- `clearInterval(id)`
+- `setImmediate(callback, ...args)`
+- `clearImmediate(id)`
+- `requestAnimationFrame(callback)`
+- `cancelAnimationFrame(id)`
+- `queueMicrotask(callback)`
+
+### Tick Timing Model
+
+- Internal loop runs once per server tick.
+- 1 tick is treated as 50 ms.
+- Delay conversion uses `Math.max(1, Math.round(ms / 50))`.
+- `setTimeout(fn, 0)` and `setImmediate(fn)` both run on the next tick.
+
+### Macro/Microtask Ordering
+
+Per tick:
+
+1. Due macrotasks are collected.
+2. Due macrotasks run in scheduling order.
+3. After each macrotask, all queued microtasks are drained.
+4. If no macrotask is due, microtasks are still drained.
+
+This matches `macrotask -> all microtasks -> next macrotask` semantics.
+
+### Additional Behavior
+
+- `requestAnimationFrame` callback receives elapsed milliseconds since runtime loop start.
+- `clear*`/`cancel*` with invalid IDs are no-op.
+- Timer and microtask callback exceptions are caught and logged.
+- Microtask drain has a safety cap (10,000 per drain) to prevent infinite loops.
+
+## Practical Pattern
+
+```ts
+import { chalk, type PluginContext } from 'ecmacraft';
+
+export default function main(ctx: PluginContext) {
+  const plugin = ctx.getPlugin();
+  const server = plugin.getServer();
+
+  const interval = setInterval(() => {
+    server.broadcastMessage(chalk.aqua`Online: ${server.getOnlinePlayers().size()}`);
+  }, 5_000);
+
+  return () => {
+    clearInterval(interval);
+  };
+}
+```

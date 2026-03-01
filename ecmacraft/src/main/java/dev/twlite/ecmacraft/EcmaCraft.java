@@ -10,8 +10,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EcmaCraft extends JavaPlugin {
     private EcmaCraftLoader loader;
     private PluginContext pluginContext;
+    private Value unloadCallback;
 
     private void unloadRuntime() {
+        if (unloadCallback != null) {
+            try {
+                unloadCallback.execute();
+            } catch (Exception e) {
+                getLogger().warning("Error executing unload callback: " + e.getMessage());
+            }
+            unloadCallback = null;
+        }
+
         if (pluginContext != null) {
             pluginContext.shutdown();
             pluginContext = null;
@@ -33,7 +43,10 @@ public class EcmaCraft extends JavaPlugin {
 
             if (defaultExport != null && defaultExport.canExecute()) {
                 pluginContext = new PluginContext(this, loader.getContext());
-                defaultExport.execute(pluginContext);
+                Value result = defaultExport.execute(pluginContext);
+                if (result != null && result.canExecute()) {
+                    unloadCallback = result;
+                }
             } else {
                 getLogger().warning("main.js does not export an executable default function.");
             }
@@ -51,14 +64,12 @@ public class EcmaCraft extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("EcmaCraft has been enabled!");
-
         reloadRuntime();
     }
 
     @Override
     public void onDisable() {
         getLogger().info("EcmaCraft has been disabled!");
-
         unloadRuntime();
     }
 

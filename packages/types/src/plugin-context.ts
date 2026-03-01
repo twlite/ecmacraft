@@ -1,5 +1,11 @@
 import type { JavaPlugin } from './jar_types.js';
 
+/**
+ * Optional cleanup function returned by the main entry point.
+ * Called before the JS runtime is unloaded (e.g. on reload or server shutdown).
+ */
+export type UnloadFunction = () => void;
+
 export interface PluginContext {
   /**
    * Registers an event or command handler. Handler methods should be decorated with `@Event` or `@Command` for it to work.

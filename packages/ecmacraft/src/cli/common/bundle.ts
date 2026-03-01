@@ -1,4 +1,5 @@
 import { build, type BuildOptions } from 'esbuild';
+import { javaTypePlugin } from './java-type-plugin.js';
 
 interface BundleSourceOptions {
   entryFile: string;
@@ -11,6 +12,7 @@ export async function bundleSource(options: BundleSourceOptions): Promise<void> 
   const { entryFile, outfile, minify, additionalConfig } = options;
   const additionalPure = additionalConfig?.pure ?? [];
   const pure = Array.from(new Set(['Java.type', ...additionalPure]));
+  const additionalPlugins = additionalConfig?.plugins ?? [];
 
   await build({
     entryPoints: [entryFile],
@@ -25,6 +27,7 @@ export async function bundleSource(options: BundleSourceOptions): Promise<void> 
     minify,
     logLevel: 'silent',
     ...additionalConfig,
+    plugins: [javaTypePlugin(), ...additionalPlugins],
     pure,
   });
 }

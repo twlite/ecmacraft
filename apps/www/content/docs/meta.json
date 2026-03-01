@@ -6,6 +6,7 @@
         "cli",
         "configuration",
         "plugin-basics",
+        "runtime-api",
         "build-and-deploy"
     ]
 }

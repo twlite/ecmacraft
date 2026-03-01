@@ -14,10 +14,21 @@ export function Event<E extends SpigotEvents>(eventName: E) {
 const CommandHandlers: Record<string, Record<string, string>> = {};
 (globalThis as Record<string, unknown>).__ecmacraft_internal_state_store_$CommandHandlers = CommandHandlers;
 
+const AutocompleteHandlers: Record<string, Record<string, string>> = {};
+(globalThis as Record<string, unknown>).__ecmacraft_internal_state_store_$AutocompleteHandlers = AutocompleteHandlers;
+
 export function Command(commandName: string) {
   return function (target: any, propertyKey: string) {
     const className = target.constructor.name;
     if (!CommandHandlers[className]) CommandHandlers[className] = {};
     CommandHandlers[className][propertyKey] = commandName;
+  };
+}
+
+export function Autocomplete(commandName: string) {
+  return function (target: any, propertyKey: string) {
+    const className = target.constructor.name;
+    if (!AutocompleteHandlers[className]) AutocompleteHandlers[className] = {};
+    AutocompleteHandlers[className][propertyKey] = commandName;
   };
 }

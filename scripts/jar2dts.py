@@ -783,6 +783,185 @@ def class_to_dts(jc: JavaClass, opts, all_classes: set[str], type_names: dict[st
     return '\n'.join(lines)
 
 
+# ─── Module emitter ───────────────────────────────────────────────────────────
+
+def class_to_module_dts(jc: JavaClass, opts, all_classes: set[str], type_names: dict[str, str]) -> str:
+    """
+    Emit a `declare module 'fully.qualified.ClassName'` block for a single class,
+    so it can be imported as:
+
+        import File from 'java.io.File'
+        import { readAllBytes } from 'java.nio.file.Files'
+
+    The default export is the class/interface/enum itself.
+    Static members are re-exported as named exports for convenience.
+    """
+    fqcn = fqcn_from_class_path(jc.class_name)
+    name = type_names.get(jc.class_name, sanitize_name(jc.class_name.split('/')[-1].replace('$', '_')))
+    access = jc.access
+
+    if is_enum(access):
+        kind = 'enum'
+    elif is_interface(access):
+        kind = 'interface'
+    else:
+        kind = 'class'
+
+    generics = ''
+    if jc.signature and not opts.no_generics:
+        generics = extract_class_generics(jc.signature)
+
+    extends_clause = ''
+    implements_clause = ''
+
+    if kind != 'enum':
+        if jc.super_name and jc.super_name not in ('java/lang/Object', 'java/lang/Enum'):
+            super_ts = java_class_to_ts(jc.super_name, type_names)
+            extends_clause = f" extends {super_ts}"
+
+        ifaces = [java_class_to_ts(i, type_names) for i in jc.interfaces
+                  if i not in ('java/io/Serializable', 'java/lang/Comparable', 'java/lang/Cloneable')]
+        if ifaces:
+            kw = 'extends' if kind == 'interface' else 'implements'
+            implements_clause = f" {kw} {', '.join(ifaces)}"
+
+    lines: list[str] = []
+    lines.append(f"declare module '{fqcn}' {{")
+
+    if kind == 'enum':
+        enum_values = [
+            sanitize_name(f.name)
+            for f in jc.fields
+            if is_static(f.access) and is_public(f.access) and f.descriptor == f'L{jc.class_name};'
+        ]
+
+        # Instance interface
+        lines.append(f"  interface {name} {{")
+        for m in jc.methods:
+            if is_static(m.access) or m.name in ('<init>', '<clinit>'):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts:
+                lines.append('  ' + ts.strip())
+        lines.append("  }")
+        lines.append("")
+
+        # Static / constructor interface
+        lines.append(f"  interface {name}Constructor {{")
+        for ev in enum_values:
+            lines.append(f"    readonly {ev}: {name};")
+        seen_static: set[str] = set()
+        for m in jc.methods:
+            if not is_static(m.access) or m.name in ('<init>', '<clinit>'):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_static:
+                lines.append('  ' + ts.strip())
+                seen_static.add(ts)
+        lines.append("  }")
+        lines.append("")
+
+        lines.append(f"  const {name}: {name}Constructor;")
+        lines.append(f"  export default {name};")
+        # Named exports for each enum value for convenience
+        for ev in enum_values:
+            lines.append(f"  export {{ {ev} }};")
+
+    elif kind == 'interface':
+        abstract_kw = ''
+        lines.append(f"  interface {name}{generics}{extends_clause}{implements_clause} {{")
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID'):
+                continue
+            ts = field_to_ts(f, opts, type_names)
+            if ts:
+                lines.append('  ' + ts.strip())
+        seen_sigs: set[str] = set()
+        for m in jc.methods:
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_sigs:
+                lines.append('  ' + ts.strip())
+                seen_sigs.add(ts)
+        lines.append("  }")
+        lines.append(f"  export default {name};")
+
+    else:
+        # class — split into instance interface + static constructor interface
+        # so that `new File('path')` and `File.separator` both work.
+
+        abstract_kw = 'abstract ' if is_abstract(access) else ''
+
+        # Instance interface
+        lines.append(f"  interface {name}{generics}{extends_clause}{implements_clause} {{")
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID') or is_static(f.access):
+                continue
+            ts = field_to_ts(f, opts, type_names)
+            if ts:
+                lines.append('  ' + ts.strip())
+        seen_instance: set[str] = set()
+        for m in jc.methods:
+            if m.name in ('<init>', '<clinit>') or is_static(m.access):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_instance:
+                lines.append('  ' + ts.strip())
+                seen_instance.add(ts)
+        lines.append("  }")
+        lines.append("")
+
+        # Static / constructor interface
+        lines.append(f"  interface {name}Constructor {{")
+        seen_ctor: set[str] = set()
+        for m in jc.methods:
+            if m.name != '<init>':
+                continue
+            ctor_sig = constructor_to_static_new_signature(m, opts, name, type_names)
+            if ctor_sig and ctor_sig not in seen_ctor:
+                lines.append('  ' + ctor_sig.strip())
+                seen_ctor.add(ctor_sig)
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID') or not is_static(f.access):
+                continue
+            ts = field_to_ts(f, opts, type_names)
+            if ts:
+                lines.append('  ' + ts.strip())
+        seen_static_methods: set[str] = set()
+        for m in jc.methods:
+            if m.name in ('<init>', '<clinit>') or not is_static(m.access):
+                continue
+            ts = method_to_ts(m, opts, type_names)
+            if ts and ts not in seen_static_methods:
+                lines.append('  ' + ts.strip())
+                seen_static_methods.add(ts)
+        lines.append("  }")
+        lines.append("")
+
+        lines.append(f"  const {name}: {name}Constructor;")
+        lines.append(f"  export default {name};")
+
+        # Named exports for static methods/fields so you can also do:
+        #   import { separator } from 'java.io.File'
+        static_named: list[str] = []
+        for f in jc.fields:
+            if f.name in ('$VALUES', 'serialVersionUID') or not is_static(f.access):
+                continue
+            if is_public(f.access):
+                static_named.append(sanitize_name(f.name))
+        for m in jc.methods:
+            if not is_static(m.access) or m.name in ('<init>', '<clinit>'):
+                continue
+            if is_public(m.access):
+                safe = sanitize_name(m.name)
+                if safe not in static_named:
+                    static_named.append(safe)
+        if static_named:
+            lines.append(f"  export {{ {', '.join(static_named)} }};")
+
+    lines.append("}")
+    return '\n'.join(lines)
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def parse_args():
@@ -797,6 +976,12 @@ def parse_args():
     p.add_argument('--prefix', default='', help='Wrap everything in a namespace')
     p.add_argument('--emit-runtime-value', dest='emit_runtime_value', action='store_true', default=False,
                    help='Emit runtime Java.type(...) value bindings alongside generated types')
+    p.add_argument('--emit-modules', dest='emit_modules', action='store_true', default=False,
+                   help=(
+                       'Emit declare module blocks so classes can be imported by FQCN: '
+                       '`import File from "java.io.File"`. '
+                       'Produces a single java-modules.d.ts (or is merged into --single output).'
+                   ))
     return p.parse_args()
 
 def main():
@@ -859,9 +1044,9 @@ def main():
     os.makedirs(opts.out, exist_ok=True)
 
     if opts.single:
-        # Single file
+        # Single file — optionally append module declarations at the end
         out_path = os.path.join(opts.out, 'jar_types.ts')
-        with open(out_path, 'w') as f:
+        with open(out_path, 'w', encoding='utf-8') as f:
             f.write("/* eslint-disable */\n// @ts-nocheck\n// prettier-ignore\n// Auto-generated by jar2dts.py\n")
             f.write(f"// Source: {os.path.basename(opts.jar)}\n\n")
             if opts.prefix:
@@ -873,20 +1058,28 @@ def main():
                 for jc in pkg_classes:
                     dts = class_to_dts(jc, opts, all_class_names, type_names)
                     if opts.prefix:
-                        # Indent
                         indented = '\n'.join('  ' + l for l in dts.split('\n'))
                         f.write(indented + '\n\n')
                     else:
                         f.write(dts + '\n\n')
             if opts.prefix:
                 f.write("}\n")
+
+            # Append module declarations inline
+            if opts.emit_modules:
+                f.write("\n// --- Module declarations (import X from 'fqcn') ---\n\n")
+                for pkg in sorted(by_package.keys()):
+                    for jc in sorted(by_package[pkg], key=lambda c: c.class_name):
+                        f.write(class_to_module_dts(jc, opts, all_class_names, type_names))
+                        f.write('\n\n')
+
         print(f"Written: {out_path}")
     else:
         # Per-package files
         for pkg, pkg_classes in by_package.items():
             pkg_ts = pkg.replace('/', '.') or 'default'
             out_path = os.path.join(opts.out, f"{pkg_ts}.d.ts")
-            with open(out_path, 'w') as f:
+            with open(out_path, 'w', encoding='utf-8') as f:
                 f.write(f"// Auto-generated by jar2dts.py\n")
                 f.write(f"// Package: {pkg_ts}\n\n")
                 if opts.prefix:
@@ -901,6 +1094,20 @@ def main():
                 if opts.prefix:
                     f.write("}\n")
         print(f"Written {len(by_package)} .d.ts files to: {opts.out}")
+
+        # Separate file for module declarations
+        if opts.emit_modules:
+            modules_path = os.path.join(opts.out, 'java-modules.d.ts')
+            with open(modules_path, 'w', encoding='utf-8') as f:
+                f.write("/* eslint-disable */\n// @ts-nocheck\n// prettier-ignore\n")
+                f.write("// Auto-generated by jar2dts.py -- declare module blocks\n")
+                f.write(f"// Source: {os.path.basename(opts.jar)}\n\n")
+                for pkg in sorted(by_package.keys()):
+                    f.write(f"// {pkg.replace('/', '.')}\n")
+                    for jc in sorted(by_package[pkg], key=lambda c: c.class_name):
+                        f.write(class_to_module_dts(jc, opts, all_class_names, type_names))
+                        f.write('\n\n')
+            print(f"Written: {modules_path}")
 
     print("Done.")
 

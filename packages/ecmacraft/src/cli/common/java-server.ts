@@ -13,6 +13,9 @@ export function startJavaServer(options: JavaServerOptions): ChildProcessWithout
   const processHandle = spawn('java', [...options.javaArgs, '-jar', options.serverJarPath, 'nogui'], {
     cwd: options.cwd,
     stdio: 'pipe',
+    // On Windows, detach the child so it does not receive the parent's Ctrl+C console event.
+    // Shutdown is handled exclusively via the 'stop' command on stdin.
+    detached: process.platform === 'win32',
   });
 
   processHandle.stdout.setEncoding('utf-8');

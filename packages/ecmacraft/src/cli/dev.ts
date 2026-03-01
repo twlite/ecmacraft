@@ -156,6 +156,8 @@ export async function prepareDevelopmentEnvironment(opts: PrepareDevelopmentEnvi
   process.stdin.resume();
   console.log('[ecmacraft] Type server commands directly in this terminal.');
 
+  const SHUTDOWN_TIMEOUT_MS = 15_000;
+
   const dispose = async () => {
     if (disposed) {
       return;
@@ -169,12 +171,20 @@ export async function prepareDevelopmentEnvironment(opts: PrepareDevelopmentEnvi
 
     try {
       sendServerCommand(serverProcess, 'stop');
+      serverProcess.stdin.end();
     } catch {
       // no-op
     }
 
     await new Promise<void>((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('[ecmacraft] Server did not exit in time, killing process...');
+        serverProcess.kill('SIGKILL');
+        resolve();
+      }, SHUTDOWN_TIMEOUT_MS);
+
       serverProcess.once('exit', () => {
+        clearTimeout(timeout);
         resolve();
       });
     });

@@ -1,1 +1,10 @@
-export { Command, Event, type PluginContext, type SpigotEventType, type SpigotEvents } from '@ecmacraft/types';
+export {
+  Autocomplete,
+  Command,
+  Event,
+  type PluginContext,
+  type SpigotEventType,
+  type SpigotEvents,
+  type UnloadFunction,
+} from '@ecmacraft/types';
+export * from './chalk.js';

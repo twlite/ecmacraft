@@ -1,4 +1,6 @@
-import { createWriteStream } from 'node:fs';
+import { createWriteStream, existsSync } from 'node:fs';
+import { copyFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
 import { pipeline } from 'node:stream/promises';
@@ -8,6 +10,7 @@ interface DownloadPaperMcOptions {
   version: string;
   filePath: string;
   showProgress?: boolean;
+  cacheDir?: string;
 }
 
 interface PaperProjectResponse {
@@ -106,9 +109,26 @@ async function resolvePaperDownloadUrl(version: string): Promise<string> {
   return downloadUrl;
 }
 
+function paperCacheFileName(version: string): string {
+  return `paper-${version}.jar`;
+}
+
 export async function downloadPaperMc(options: DownloadPaperMcOptions) {
-  const { version, filePath, showProgress = false } = options;
+  const { version, filePath, showProgress = false, cacheDir } = options;
   const resolvedVersion = await resolvePaperVersion(version);
+
+  // Check cache
+  if (cacheDir) {
+    const cachePath = join(cacheDir, paperCacheFileName(resolvedVersion));
+    if (existsSync(cachePath)) {
+      if (showProgress) {
+        console.log(`[ecmacraft] Using cached PaperMC ${resolvedVersion}`);
+      }
+      await copyFile(cachePath, filePath);
+      return;
+    }
+  }
+
   const downloadUrl = await resolvePaperDownloadUrl(resolvedVersion);
 
   if (showProgress) {
@@ -139,5 +159,11 @@ export async function downloadPaperMc(options: DownloadPaperMcOptions) {
 
   if (showProgress) {
     console.log(`[ecmacraft] PaperMC downloaded to ${filePath}`);
+  }
+
+  // Save to cache
+  if (cacheDir) {
+    const cachePath = join(cacheDir, paperCacheFileName(resolvedVersion));
+    await copyFile(filePath, cachePath);
   }
 }

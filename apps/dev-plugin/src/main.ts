@@ -1,15 +1,16 @@
-import { PluginContext, Event, SpigotEventType } from 'ecmacraft';
+import { PluginContext, UnloadFunction } from 'ecmacraft';
+import { RandomLocation } from './random-location.js';
+import { DeathLocation } from './death-location.js';
 
-class LightningStriker {
-  @Event('PlayerToggleSneakEvent')
-  onBlockBreak(event: SpigotEventType<'PlayerToggleSneakEvent'>) {
-    if (!event.isSneaking()) return;
+export default function main(ctx: PluginContext): UnloadFunction {
+  console.log('[dev-plugin] Plugin initialized');
 
-    const player = event.getPlayer();
-    player.getWorld().strikeLightning(player.getLocation());
-  }
-}
+  const randomLocation = new RandomLocation(ctx.getPlugin());
 
-export default function main(ctx: PluginContext) {
-  ctx.registerHandlers(new LightningStriker());
+  ctx.registerHandlers(randomLocation, new DeathLocation());
+
+  return () => {
+    randomLocation.destroy();
+    console.log('[dev-plugin] Plugin shutdown');
+  };
 }

@@ -2,11 +2,9 @@ package dev.twlite.ecmacraft;
 
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.ProxyArray;
-import org.graalvm.polyglot.proxy.ProxyExecutable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -23,15 +21,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PluginContext {
     private final JavaPlugin plugin;
     private final Context context;
-    private final AtomicInteger animationFrameIdCounter = new AtomicInteger(1);
-    private final ConcurrentHashMap<Integer, BukkitTask> animationFrameTasks = new ConcurrentHashMap<>();
+    private final EventLoop eventLoop;
     private final ConcurrentHashMap<String, Command> dynamicCommands = new ConcurrentHashMap<>();
-    private final long animationFrameEpochMillis = System.currentTimeMillis();
     private final CommandMap commandMap;
     private final Map<String, Command> knownCommands;
 
@@ -40,57 +35,20 @@ public class PluginContext {
         this.context = context;
         this.commandMap = resolveCommandMap();
         this.knownCommands = resolveKnownCommands(commandMap);
-        installRequestAnimationFrame();
-    }
-
-    private void installRequestAnimationFrame() {
-        context.getBindings("js").putMember("requestAnimationFrame", (ProxyExecutable) args -> {
-            if (args.length == 0 || args[0] == null || !args[0].canExecute()) {
-                throw new IllegalArgumentException("requestAnimationFrame(callback) requires an executable callback");
-            }
-
-            Value callback = args[0];
-            int frameId = animationFrameIdCounter.getAndIncrement();
-
-            BukkitTask task = plugin.getServer().getScheduler().runTask(plugin, () -> {
-                animationFrameTasks.remove(frameId);
-                try {
-                    double timestamp = System.currentTimeMillis() - animationFrameEpochMillis;
-                    callback.execute(timestamp);
-                } catch (Exception ex) {
-                    plugin.getLogger().warning("Error executing requestAnimationFrame callback: " + ex.getMessage());
-                }
-            });
-
-            animationFrameTasks.put(frameId, task);
-            return frameId;
-        });
-
-        context.getBindings("js").putMember("cancelAnimationFrame", (ProxyExecutable) args -> {
-            if (args.length == 0 || args[0] == null || !args[0].fitsInInt()) {
-                return null;
-            }
-
-            int frameId = args[0].asInt();
-            BukkitTask task = animationFrameTasks.remove(frameId);
-            if (task != null) {
-                task.cancel();
-            }
-            return null;
-        });
+        this.eventLoop = new EventLoop(plugin, context);
+        this.eventLoop.installBindings();
     }
 
     public void shutdown() {
-        for (BukkitTask task : animationFrameTasks.values()) {
-            task.cancel();
-        }
-        animationFrameTasks.clear();
+        eventLoop.shutdown();
         unregisterDynamicCommands();
     }
 
     public void registerHandlers(Value... handlerInstances) {
         Value eventMeta = context.getBindings("js").getMember("__ecmacraft_internal_state_store_$EventHandlers");
         Value cmdMeta = context.getBindings("js").getMember("__ecmacraft_internal_state_store_$CommandHandlers");
+        Value autocompleteMeta = context.getBindings("js")
+                .getMember("__ecmacraft_internal_state_store_$AutocompleteHandlers");
 
         for (Value handler : handlerInstances) {
             String className = handler.getMember("constructor").getMember("name").asString();
@@ -138,6 +96,11 @@ public class PluginContext {
 
             if (cmdMeta != null && cmdMeta.hasMember(className)) {
                 Value classMap = cmdMeta.getMember(className);
+                Value classAutocompleteMap = null;
+                if (autocompleteMeta != null && autocompleteMeta.hasMember(className)) {
+                    classAutocompleteMap = autocompleteMeta.getMember(className);
+                }
+
                 for (String methodName : classMap.getMemberKeys()) {
                     Value method = handler.getMember(methodName);
                     if (method == null || !method.canExecute() || !classMap.hasMember(methodName))
@@ -150,9 +113,27 @@ public class PluginContext {
                         continue;
                     }
 
-                    Value tabCompleteMethod = handler.getMember(methodName + "TabComplete");
-                    if (tabCompleteMethod != null && !tabCompleteMethod.canExecute()) {
-                        tabCompleteMethod = null;
+                    Value tabCompleteMethod = null;
+
+                    // Preferred: explicit mapping via @Autocomplete("command") decorator
+                    if (classAutocompleteMap != null) {
+                        for (String autocompleteMethodName : classAutocompleteMap.getMemberKeys()) {
+                            String autocompleteCmd = normalizeCommandName(
+                                    classAutocompleteMap.getMember(autocompleteMethodName).asString());
+                            if (autocompleteCmd == null || !autocompleteCmd.equals(cmdName)) {
+                                continue;
+                            }
+
+                            Value candidate = handler.getMember(autocompleteMethodName);
+                            if (candidate != null && candidate.canExecute()) {
+                                tabCompleteMethod = candidate;
+                            } else {
+                                plugin.getLogger().warning(
+                                        "@Autocomplete mapping for /" + cmdName + " points to non-callable method: "
+                                                + className + "." + autocompleteMethodName);
+                            }
+                            break;
+                        }
                     }
 
                     plugin.getLogger().info("Register command: /" + cmdName + " -> " + methodName
@@ -224,7 +205,15 @@ public class PluginContext {
         command.unregister(commandMap);
 
         if (knownCommands != null) {
-            knownCommands.entrySet().removeIf(entry -> entry.getValue() == command);
+            List<String> keysToRemove = new ArrayList<>();
+            for (Map.Entry<String, Command> entry : knownCommands.entrySet()) {
+                if (entry.getValue() == command) {
+                    keysToRemove.add(entry.getKey());
+                }
+            }
+            for (String key : keysToRemove) {
+                knownCommands.remove(key);
+            }
         }
     }
 

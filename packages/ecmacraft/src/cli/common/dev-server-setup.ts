@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { downloadPaperMc } from './papermc.js';
 import { downloadEcmacraft } from './ecmacraft.js';
 import type { EcmacraftConfig } from '../../config/types.js';
-import { createDevelopmentPaths } from './paths.js';
+import { createBinDir, createDevelopmentPaths } from './paths.js';
 
 async function createEulaFile(eulaPath: string) {
   await writeFile(
@@ -52,11 +52,13 @@ async function ensureDirectory(dir: string) {
 
 export async function setupDevServerDirectory(cwd: string, config: EcmacraftConfig) {
   const paths = createDevelopmentPaths(cwd);
+  const cacheDir = createBinDir(cwd);
   const serverPropertiesPath = join(paths.rootDir, 'server.properties');
 
   await ensureDirectory(paths.rootDir);
   await ensureDirectory(paths.pluginsDir);
   await ensureDirectory(paths.ecmacraftDataDir);
+  await ensureDirectory(cacheDir);
   await createEulaFile(paths.eulaPath);
   await createServerPropertiesFile(serverPropertiesPath, config.development.serverProperties);
 
@@ -65,6 +67,7 @@ export async function setupDevServerDirectory(cwd: string, config: EcmacraftConf
       version: config.development.paperVersion,
       filePath: paths.serverJarPath,
       showProgress: true,
+      cacheDir,
     });
   }
 
@@ -72,6 +75,7 @@ export async function setupDevServerDirectory(cwd: string, config: EcmacraftConf
     await downloadEcmacraft({
       filePath: paths.ecmacraftJarPath,
       showProgress: true,
+      cacheDir,
     });
   }
 

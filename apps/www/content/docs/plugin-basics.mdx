@@ -10,18 +10,32 @@ At runtime, EcmaCraft loads your compiled module and calls the default export wi
 ## Minimal Plugin
 
 ```ts
-import { type PluginContext, Event, type SpigotEventType } from 'ecmacraft';
+import { Autocomplete, Command, Event, type PluginContext, type SpigotEventType } from 'ecmacraft';
+import { CommandSender } from 'ecmacraft/spigot';
 
-class Welcomer {
+class GameplayHandlers {
   @Event('PlayerJoinEvent')
   onPlayerJoin(event: SpigotEventType<'PlayerJoinEvent'>) {
     const player = event.getPlayer();
     player.sendMessage('Welcome to the server!');
   }
+
+  @Command('hello')
+  onHelloCommand(sender: CommandSender, args: string[], label: string) {
+    sender.sendMessage(`Hello from /${label} with ${args.length} arg(s)!`);
+    return true;
+  }
+
+  @Autocomplete('hello')
+  onHelloAutocomplete(sender: CommandSender, args: string[]) {
+    const options = ['world', 'ecmacraft', 'plugin'];
+    const lastArg = args[args.length - 1] ?? '';
+    return options.filter((option) => option.startsWith(String(lastArg).toLowerCase()));
+  }
 }
 
 export default function main(ctx: PluginContext) {
-  ctx.registerHandlers(new Welcomer());
+  ctx.registerHandlers(new GameplayHandlers());
 }
 ```
 
@@ -32,6 +46,9 @@ export default function main(ctx: PluginContext) {
 3. Matching Java-side listeners/command bindings are wired at runtime.
 
 If a method is not decorated, it is ignored during registration.
+
+For commands, the method decorated with `@Command(...)` is the executor.
+Use `@Autocomplete('same-command-name')` to attach tab completion to that command.
 
 ## Project Shape
 
@@ -47,3 +64,8 @@ For a standard plugin project:
 - Split large features into multiple handler classes.
 - Use TypeScript types (`SpigotEventType<...>`) for safer API usage.
 - Put gameplay constants/config in separate modules, not inside handler methods.
+- Return `true` from command handlers when the command is handled successfully.
+- Keep tab completion fast and side-effect free.
+
+For detailed runtime behavior (cleanup callbacks, command normalization/collisions,
+timer execution order, and `chalk` styling), see [Runtime API](./runtime-api.mdx).

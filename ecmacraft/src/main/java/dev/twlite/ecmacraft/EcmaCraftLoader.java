@@ -42,6 +42,16 @@ public class EcmaCraftLoader {
     }
 
     public Value loadModule(String moduleName) throws IOException {
+        InputStream embeddedSource = plugin.getResource(EMBEDDED_MAIN_JS);
+
+        if (embeddedSource != null) {
+            return context.eval(
+                    Source.newBuilder("js", new InputStreamReader(embeddedSource, StandardCharsets.UTF_8),
+                            EMBEDDED_MAIN_JS)
+                            .mimeType("application/javascript+module")
+                            .build());
+        }
+
         Path modulePath = Paths.get(context.getBindings("js").getMember("ECMACRAFT_DIR").asString(), moduleName);
 
         if (Files.exists(modulePath)) {
@@ -49,17 +59,10 @@ public class EcmaCraftLoader {
                     Source.newBuilder("js", modulePath.toFile()).mimeType("application/javascript+module").build());
         }
 
-        InputStream embeddedSource = plugin.getResource(EMBEDDED_MAIN_JS);
-        if (embeddedSource == null) {
-            throw new IOException(
-                    "Could not find runtime module '" + moduleName + "' in plugin directory or embedded path "
-                            + EMBEDDED_MAIN_JS);
-        }
+        throw new IOException(
+                "Could not find runtime module '" + moduleName + "' in plugin directory or embedded path "
+                        + EMBEDDED_MAIN_JS);
 
-        return context.eval(
-                Source.newBuilder("js", new InputStreamReader(embeddedSource, StandardCharsets.UTF_8), EMBEDDED_MAIN_JS)
-                        .mimeType("application/javascript+module")
-                        .build());
     }
 
     public Context getContext() {
